@@ -1,0 +1,328 @@
+/**
+ * CODUVELO TOUR '76 — Google Apps Script Backend (FIXED)
+ * 
+ * INSTALLATIE:
+ * 1. Open Google Spreadsheet
+ * 2. Extensions > Apps Script
+ * 3. Vervang ALLE code met deze code
+ * 4. Klik Save
+ * 5. Deploy > New deployment > Web app
+ * 6. Execute as: Me
+ * 7. Who has access: Anyone
+ * 8. Deploy en kopieer URL
+ */
+
+const SHEET_NAME = 'Sponsoring';
+
+/**
+ * Handle GET requests - voor leaderboard
+ */
+function doGet(e) {
+  try {
+    Logger.log('GET request ontvangen');
+    Logger.log('Parameters: ' + JSON.stringify(e.parameter));
+    
+    const action = e.parameter.action || '';
+    
+  if (!action || action === 'leaderboard') {
+      return getLeaderboardData();
+    }
+    
+    // Als het een submission via GET is (oude methode)
+    if (e.parameter.fietser) {
+      saveFromUrl(e.parameter);
+      return createJsonResponse({ success: true, message: 'Data opgeslagen via GET' });
+    }
+    
+    return createJsonResponse({ error: 'Onbekende actie' });
+    
+  } catch (error) {
+    Logger.log('GET Error: ' + error.toString());
+    return createJsonResponse({
+      error: error.toString(),
+      stack: error.stack
+    });
+  }
+}
+
+/**
+ * Handle POST requests - voor nieuwe sponsoring
+ */
+function doPost(e) {
+  try {
+    Logger.log('POST request ontvangen');
+    Logger.log('Post data: ' + e.postData.contents);
+    Logger.log('Parameters: ' + JSON.stringify(e.parameter));
+    
+    // Parse form data
+    var data = {};
+    
+    // Check if postData exists
+    if (e.postData && e.postData.contents) {
+      // Try parsing as JSON first
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch(jsonError) {
+        // If not JSON, parse as form data
+        var params = e.postData.contents.split('&');
+        params.forEach(function(param) {
+          var pair = param.split('=');
+          if (pair.length === 2) {
+            data[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
+          }
+        });
+      }
+    }
+    
+    // Also check URL parameters (fallback)
+    if (e.parameter && Object.keys(e.parameter).length > 0) {
+      Object.keys(e.parameter).forEach(function(key) {
+        if (!data[key]) {
+          data[key] = e.parameter[key];
+        }
+      });
+    }
+    
+    Logger.log('Parsed data: ' + JSON.stringify(data));
+    
+    // Save to spreadsheet
+    if (data.fietser && data.sponsor && data.bedrag) {
+      saveSponsoringData(data);
+      return createJsonResponse({ 
+        success: true, 
+        message: 'Sponsoring opgeslagen',
+        data: data
+      });
+    } else {
+      return createJsonResponse({ 
+        success: false, 
+        error: 'Ontbrekende velden',
+        received: data
+      });
+    }
+    
+  } catch (error) {
+    Logger.log('POST Error: ' + error.toString());
+    return createJsonResponse({
+      success: false,
+      error: error.toString(),
+      stack: error.stack
+    });
+  }
+}
+
+/**
+ * Save data from URL parameters (GET method)
+ */
+function saveFromUrl(params) {
+  var data = {
+    fietser: params.fietser || '',
+    sponsor: params.sponsor || '',
+    bedrag: params.bedrag || '0',
+    hm: params.hm || '0',
+    tarief: params.tarief || '0'
+  };
+  
+  saveSponsoringData(data);
+}
+
+/**
+ * Save sponsoring data to spreadsheet
+ */
+function saveSponsoringData(data) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  
+  // Create sheet if it doesn't exist
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(['Fietser', 'Sponsor', 'Bedrag', 'Hoogtemeters', 'Tarief', 'Timestamp']);
+    
+    // Format headers
+    var headerRange = sheet.getRange(1, 1, 1, 6);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#6F94B8');
+    headerRange.setFontColor('#FFFFFF');
+  }
+  
+  // Parse bedrag - verwijder € en vervang komma door punt
+  var bedragStr = String(data.bedrag || '0')
+    .replace('€', '')
+    .replace(/\s/g, '')
+    .replace(',', '.');
+  
+  var bedragNum = parseFloat(bedragStr) || 0;
+  
+  // Add data row
+  sheet.appendRow([
+    data.fietser || '',
+    data.sponsor || '',
+    bedragNum,  // Getal voor berekeningen
+    parseInt(data.hm) || 0,
+    parseFloat(data.tarief) || 0,
+    new Date()
+  ]);
+  
+  // Format the bedrag column as currency
+  var lastRow = sheet.getLastRow();
+  var bedragCell = sheet.getRange(lastRow, 3);
+  bedragCell.setNumberFormat('€ #,##0.00');
+  
+  Logger.log('Data opgeslagen: ' + JSON.stringify(data));
+}
+
+/**
+ * Get leaderboard data
+ */
+function getLeaderboardData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (!sheet) {
+    Logger.log('Sheet niet gevonden: ' + SHEET_NAME);
+    return createJsonResponse([]);
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  
+  if (data.length <= 1) {
+    Logger.log('Geen data gevonden (alleen headers of leeg)');
+    return createJsonResponse([]);
+  }
+  
+  // Aggregate per cyclist
+  var aggregated = {};
+  
+  // Start at row 2 (skip headers)
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var fietser = String(row[0]).trim();
+    var bedrag = row[2]; // Should be a number already
+    
+    // Skip empty rows
+    if (!fietser || fietser === '') continue;
+    
+    // Parse bedrag if it's a string
+    if (typeof bedrag === 'string') {
+      bedrag = parseFloat(
+        bedrag
+          .replace('€', '')
+          .replace(/\s/g, '')
+          .replace(',', '.')
+      ) || 0;
+    } else if (typeof bedrag !== 'number') {
+      bedrag = 0;
+    }
+    
+    // Aggregate
+    if (!aggregated[fietser]) {
+      aggregated[fietser] = {
+        name: fietser,
+        total: 0
+      };
+    }
+    aggregated[fietser].total += bedrag;
+  }
+  
+  // Convert to array and sort
+  var result = [];
+  for (var key in aggregated) {
+    if (aggregated[key].total > 0) {
+      result.push(aggregated[key]);
+    }
+  }
+  
+  result.sort(function(a, b) {
+    return b.total - a.total;
+  });
+  
+  Logger.log('Leaderboard data: ' + result.length + ' fietsers');
+  
+  return createJsonResponse(result);
+}
+
+/**
+ * Create JSON response with proper headers
+ */
+function createJsonResponse(data) {
+  var json = JSON.stringify(data);
+  var output = ContentService.createTextOutput(json);
+  output.setMimeType(ContentService.MimeType.JSON);
+  return output;
+}
+
+/**
+ * Test function - run this to test leaderboard
+ */
+function testLeaderboard() {
+  var result = getLeaderboardData();
+  Logger.log('Leaderboard test result:');
+  Logger.log(result.getContent());
+}
+
+/**
+ * Test function - create sample data
+ */
+function createTestData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(['Fietser', 'Sponsor', 'Bedrag', 'Hoogtemeters', 'Tarief', 'Timestamp']);
+    
+    var headerRange = sheet.getRange(1, 1, 1, 6);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#6F94B8');
+    headerRange.setFontColor('#FFFFFF');
+  }
+  
+  // Add test data
+  var testData = [
+    ['Alain Peleman', 'Test Sponsor 1', 50.00, 5000, 10, new Date()],
+    ['Alain Peleman', 'Test Sponsor 2', 25.00, 2500, 10, new Date()],
+    ['Marc Boets', 'Test Sponsor 3', 75.00, 15000, 5, new Date()],
+    ['Stephane Vandamme', 'Test Sponsor 4', 100.00, 10000, 10, new Date()],
+    ['Guy Peleman', 'Test Sponsor 5', 30.00, 6000, 5, new Date()]
+  ];
+  
+  testData.forEach(function(row) {
+    sheet.appendRow(row);
+    var lastRow = sheet.getLastRow();
+    sheet.getRange(lastRow, 3).setNumberFormat('€ #,##0.00');
+  });
+  
+  Logger.log('Test data aangemaakt! ' + testData.length + ' rijen toegevoegd.');
+}
+
+/**
+ * Test function - save via POST
+ */
+function testSaveData() {
+  var testData = {
+    fietser: 'Test Fietser',
+    sponsor: 'Test Sponsor',
+    bedrag: '25.50',
+    hm: '2500',
+    tarief: '10'
+  };
+  
+  saveSponsoringData(testData);
+  Logger.log('Test data opgeslagen!');
+}
+
+/**
+ * Clear all data (keep headers)
+ */
+function clearAllData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (sheet) {
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      sheet.deleteRows(2, lastRow - 1);
+      Logger.log('Alle data verwijderd (headers behouden)');
+    }
+  }
+}
