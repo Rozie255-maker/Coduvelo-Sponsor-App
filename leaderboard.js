@@ -4,7 +4,7 @@
 /* -------------------------------------------------- */
 
 // Vervang door jouw Apps Script URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLPDmCIqQsfj-NGilxKJDNylTY66wYY4zEc3UAa1tXfURdy4XpmL61mQ6cb_GrWE5A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6f0oxtuw36bsYHU3kD7dqL9Me_TSbNCNSvo994g-czhA9Q7fEolnXQrAIomkvwPsF/exec';
 
 
 /* -------------------------------------------------- */
