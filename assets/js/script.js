@@ -1,6 +1,6 @@
 (function(){
-  // VERVANG DIT DOOR JOUW GOOGLE APPS SCRIPT URL
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbJ5EW3s449_UPJpz1Ok24qOX9WtO3o51DlgNho6qQ6tAyhb_RPZl15WtZ3OQLeqmp/exec';
+  // GOOGLE APPS SCRIPT URL
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6f0oxtuw36bsYHU3kD7dqL9Me_TSbNCNSvo994g-czhA9Q7fEolnXQrAIomkvwPsF/exec';
   
   var chosenHm = 0, maxHm = 0;
   var selectedRate = 0;
@@ -42,7 +42,7 @@
 
   window.cdvCyclistChange = function() {
     var sel = document.getElementById('cdv-cyclist');
-    maxHm   = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
+    maxHm  = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
     chosenHm = 0;
     document.getElementById('cdv-btn-min').disabled  = false;
     document.getElementById('cdv-btn-plus').disabled = false;
@@ -100,7 +100,7 @@
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
     
     document.getElementById('cdv-chosen-hm').innerText = chosenHm.toLocaleString('nl-BE');
-    document.getElementById('cdv-hm-of').innerText     = maxHm > 0 ? 'doel: ' + maxHm.toLocaleString('nl-BE') + ' hm' : 'Kies eerst een fietser';
+    document.getElementById('cdv-hm-of').innerText      = maxHm > 0 ? 'doel: ' + maxHm.toLocaleString('nl-BE') + ' hm' : 'Kies eerst een fietser';
     
     var totalAmount = (chosenHm / 500) * selectedRate;
     document.getElementById('cdv-total').innerText = totalAmount.toFixed(2).replace('.', ',');
@@ -121,17 +121,25 @@
     var totalFormatted = totalAmount.toFixed(2);
     
     var btn = document.getElementById('cdv-submit');
-    btn.innerText = 'Opslaan...';
+    btn.innerText = 'Verwerken...';
     btn.disabled  = true;
+
+    // Direct openen (User-initiated = geen pop-up blokkade)
+    var amountKUL = Math.round(totalAmount * 100);
+    window.open(
+      'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
+      '_blank'
+    );
     
-    console.log('Submitting data:', {
-      fietser: cyclist,
-      sponsor: name,
-      bedrag: totalFormatted,
-      hm: chosenHm,
-      tarief: selectedRate
-    });
-    
+    // Lokale opslag
+    try {
+      localStorage.setItem('cdv_lastDonation', JSON.stringify({
+        cyclist: cyclist, sponsor: name, amount: totalFormatted, 
+        hm: chosenHm, rate: selectedRate, timestamp: new Date().toISOString()
+      }));
+    } catch(e) { console.log('LocalStorage niet beschikbaar'); }
+
+    // Achtergrond verzending
     var formData = new FormData();
     formData.append('fietser', cyclist);
     formData.append('sponsor', name);
@@ -145,32 +153,12 @@
       mode: 'no-cors'
     })
     .then(function() {
-      console.log('Data verzonden naar Google Sheets');
+      btn.innerText = 'Verzonden! (Betaal in het nieuwe tabblad)';
+      console.log('Data verzonden');
     })
     .catch(function(err) {
+      btn.innerText = 'Fout bij verzenden';
       console.error('Fout bij opslaan:', err);
-    })
-    .finally(function() {
-      setTimeout(function() {
-        try {
-          localStorage.setItem('cdv_lastDonation', JSON.stringify({
-            cyclist: cyclist,
-            sponsor: name,
-            amount: totalFormatted,
-            hm: chosenHm,
-            rate: selectedRate,
-            timestamp: new Date().toISOString()
-          }));
-        } catch(e) {
-          console.log('LocalStorage not available');
-        }
-        var amountKUL = Math.round(totalAmount * 100);
-        window.open(
-          'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
-          '_blank'
-        );
-        window.location.href = 'https://donate.kuleuven.cloud/Coduvelo-76/';
-      }, 1000);
     });
   };
 
