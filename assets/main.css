@@ -1,1 +1,314 @@
+:root {
+  --bg:#ECE4DA;
+  --box:#F6F3EC;
+  --accent:#6F94B8;
+  --accent-dark:#4a7399;
+  --dark:#574C3F;
+  --dark-light:#8a7b6e;
+  --mountain:#D9D2C7;
+  --mountain-dark:#b5ac9e;
+  --red:#9e4a3a;
+  --border:#c8bdb0;
+  --radius:10px;
+  --shadow:0 6px 18px rgba(0,0,0,0.06);
+  --font-body:'Source Sans 3','Helvetica Neue',sans-serif;
+  --font-title:'Playfair Display',serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing:border-box;
+}
+
+body {
+  margin:0;
+  padding:20px;
+  font-family:var(--font-body);
+  background:#f3eee7;
+  color:var(--dark);
+}
+
+#cdv-app {
+  background:var(--bg);
+  max-width:680px;
+  margin:0 auto 40px;
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+/* Header */
+
+.cdv-header {
+  background:var(--dark);
+  padding:1.2rem 1.5rem 0.9rem;
+  text-align:center;
+}
+
+.cdv-header h1 {
+  font-family:var(--font-title);
+  font-size:22px;
+  color:#fff;
+  margin:0;
+}
+
+.cdv-header p {
+  font-size:10px;
+  color:#c8bdb0;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-top:4px;
+}
+
+/* Cards */
+
+.cdv-card {
+  background:var(--box);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.25rem;
+  margin:1rem 1.25rem;
+}
+
+.cdv-card-title {
+  font-family:var(--font-title);
+  font-size:16px;
+  color:var(--dark);
+  margin-bottom:1.2rem;
+  padding-bottom:8px;
+  border-bottom:1.5px solid var(--mountain-dark);
+}
+
+/* Form elements */
+
+label {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--dark-light);
+  display:block;
+  margin-bottom:4px;
+}
+
+select,
+input[type="text"],
+input[type="number"] {
+  width:100%;
+  padding:9px 12px;
+  border:1.5px solid var(--border);
+  border-radius:7px;
+  background:#fff;
+  margin-bottom:12px;
+  font-size:14px;
+  font-family:var(--font-body);
+  color:var(--dark);
+  outline:none;
+}
+
+/* Amount buttons */
+
+.cdv-amount-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.cdv-amount-btn {
+  padding:12px;
+  border:2px solid var(--border);
+  border-radius:7px;
+  background:#fff;
+  cursor:pointer;
+  transition:0.2s;
+  text-align:center;
+  font-size:14px;
+  font-weight:600;
+}
+
+.cdv-amount-btn:hover {
+  border-color:var(--accent);
+  background:#fff;
+}
+
+.cdv-amount-btn.cdv-active {
+  border-color:var(--accent-dark);
+  background:rgba(111,148,184,0.08);
+}
+
+/* Buttons */
+
+.cdv-btn {
+  width:100%;
+  padding:10px 14px;
+  border-radius:7px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  font-family:var(--font-body);
+  transition:0.2s;
+}
+
+.cdv-btn:disabled {
+  opacity:0.4;
+  cursor:not-allowed;
+}
+
+.cdv-btn-accent {
+  background:var(--accent);
+  color:#fff;
+}
+
+.cdv-btn-accent:hover:not(:disabled) {
+  background:var(--accent-dark);
+}
+
+.cdv-btn-outline {
+  background:#fff;
+  border:1.5px solid var(--border);
+  color:var(--dark);
+}
+
+.cdv-btn-outline:hover:not(:disabled) {
+  border-color:var(--accent);
+}
+
+/* Mountain / progress */
+
+.cdv-mountain-wrap {
+  position:relative;
+  margin:0.5rem 0 1rem;
+}
+
+#cdv-svg-element {
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.cdv-finish-flag {
+  position:absolute;
+  right:6px;
+  top:6px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.cdv-flag-red {
+  width:18px;
+  height:12px;
+  background:var(--red);
+  border-radius:2px 2px 2px 0;
+}
+
+.cdv-flag-pole {
+  width:2px;
+  height:22px;
+  background:#ddd;
+}
+
+#cdv-bike {
+  position:absolute;
+  left:0;
+  bottom:10px;
+  transform:translateX(0);
+  transition:transform 0.3s ease-out;
+  font-size:18px;
+}
+
+.cdv-fw {
+  font-size:10px;
+  margin-bottom:-4px;
+}
+
+/* Stepper & totals */
+
+.cdv-stepper {
+  text-align:center;
+  margin-top:10px;
+}
+
+.cdv-hm-big {
+  font-size:26px;
+  font-weight:700;
+}
+
+.cdv-total-display {
+  margin-top:16px;
+  padding:10px 12px;
+  border-radius:7px;
+  background:#fff;
+  border:1px solid var(--border);
+}
+
+.cdv-total-label {
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--dark-light);
+  margin-bottom:4px;
+}
+
+.cdv-total-amount {
+  font-size:20px;
+  font-weight:700;
+}
+
+.cdv-per-hm {
+  font-size:11px;
+  color:var(--dark-light);
+  margin-top:4px;
+}
+
+.cdv-donate-note {
+  font-size:11px;
+  color:var(--dark-light);
+  margin-top:10px;
+}
+
+/* Leaderboard table */
+
+.cdv-table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.cdv-table th,
+.cdv-table td {
+  padding:8px 10px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+
+.cdv-table th {
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--dark-light);
+}
+
+.cdv-table tr:nth-child(even) {
+  background:rgba(255,255,255,0.6);
+}
+
+/* Responsive */
+
+@media (max-width:480px) {
+  body {
+    padding:10px;
+  }
+
+  .cdv-card {
+    margin:0.75rem 0.75rem;
+    padding:1rem;
+  }
+
+  .cdv-header h1 {
+    font-size:19px;
+  }
+}
 
