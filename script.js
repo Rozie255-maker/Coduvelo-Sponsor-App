@@ -1,89 +1,126 @@
-/* -------------------------------------------------- */
-/* CONFIG */
-/* -------------------------------------------------- */
+// -----------------------------
+// BASIS ELEMENTEN
+// -----------------------------
+const cyclistSelect = document.getElementById("cdv-cyclist");
+const sponsorInput = document.getElementById("cdv-sponsor");
+const rateButtons = document.querySelectorAll(".cdv-amount-btn");
+const rateInput = document.getElementById("cdv-rate");
+const hmDisplay = document.getElementById("cdv-hm");
+const hmOf = document.getElementById("cdv-hm-of");
+const btnMin = document.getElementById("cdv-btn-min");
+const btnPlus = document.getElementById("cdv-btn-plus");
+const btnFull = document.getElementById("cdv-btn-full");
+const totalDisplay = document.getElementById("cdv-total-amount");
+const submitBtn = document.getElementById("cdv-submit");
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLPDmCIqQsfj-NGilxKJDNylTY66wYY4zEc3UAa1tXfURdy4XpmL61mQ6cb_GrWE5A/exec";
+const bike = document.getElementById("cdv-bike");
+const path = document.getElementById("cdv-ride-path");
+const pathLength = path.getTotalLength();
 
+let chosenRate = 0;
+let chosenHm = 0;
+let maxHm = 0;
 
-/* -------------------------------------------------- */
-/* FORM LOGICA */
-/* -------------------------------------------------- */
+// -----------------------------
+// FIETS POSITIE OP BERG
+// -----------------------------
+function updateBikePosition() {
+  const progress = chosenHm / maxHm;
+  const point = path.getPointAtLength(progress * pathLength);
 
-document.addEventListener("DOMContentLoaded", function () {
+  bike.style.transform = `translate(${point.x}px, ${point.y}px)`;
+}
 
-  const form = document.getElementById("cdv-form");
-  const cyclistSelect = document.getElementById("cdv-cyclist");
-  const sponsorInput = document.getElementById("cdv-sponsor");
-  const hmInput = document.getElementById("cdv-hm");
-  const rateInput = document.getElementById("cdv-rate");
-  const totalBox = document.getElementById("cdv-total");
-  const totalAmount = document.getElementById("cdv-total-amount");
-  const submitBtn = document.getElementById("cdv-submit");
+// -----------------------------
+// BEDRAG KIEZEN
+// -----------------------------
+rateButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    rateButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-  function updateTotal() {
-    const hm = Number(hmInput.value) || 0;
-    const rate = Number(rateInput.value) || 0;
-    const total = hm * rate;
-
-    totalAmount.innerText = "€ " + total.toFixed(2).replace(".", ",");
-    return total;
-  }
-
-  hmInput.addEventListener("input", updateTotal);
-  rateInput.addEventListener("input", updateTotal);
-
-
-  /* -------------------------------------------------- */
-  /* SUBMIT HANDLER */
-  /* -------------------------------------------------- */
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const cyclist = cyclistSelect.value;
-    const sponsor = sponsorInput.value.trim();
-    const hm = Number(hmInput.value);
-    const rate = Number(rateInput.value);
-    const total = updateTotal();
-
-    if (!cyclist || !sponsor || hm <= 0 || rate <= 0) {
-      alert("Gelieve alle velden correct in te vullen.");
-      return;
+    if (btn.dataset.amount === "custom") {
+      rateInput.value = "";
+      chosenRate = 0;
+      rateInput.focus();
+    } else {
+      chosenRate = parseFloat(btn.dataset.amount);
+      rateInput.value = "";
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Verzenden...";
-
-    const payload = {
-      cyclist,
-      sponsor,
-      hm,
-      rate,
-      total
-    };
-
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error);
-
-        submitBtn.innerText = "Verzonden!";
-        form.reset();
-        updateTotal();
-
-        setTimeout(() => {
-          submitBtn.disabled = false;
-          submitBtn.innerText = "Bevestigen";
-        }, 1500);
-      })
-      .catch(err => {
-        alert("Fout bij verzenden: " + err.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Bevestigen";
-      });
+    updateTotal();
   });
+});
+
+rateInput.addEventListener("input", () => {
+  chosenRate = parseFloat(rateInput.value) || 0;
+  updateTotal();
+});
+
+// -----------------------------
+// FIETSER KIEZEN
+// -----------------------------
+cyclistSelect.addEventListener("change", () => {
+  maxHm = parseInt(cyclistSelect.selectedOptions[0].dataset.max);
+  hmOf.textContent = `max ${maxHm} hm`;
+
+  btnPlus.disabled = false;
+  btnMin.disabled = false;
+  btnFull.disabled = false;
+
+  updateTotal();
+});
+
+// -----------------------------
+// HM KNOPPEN
+// -----------------------------
+btnPlus.addEventListener("click", () => {
+  if (chosenHm + 500 <= maxHm) {
+    chosenHm += 500;
+    hmDisplay.textContent = chosenHm;
+    updateBikePosition();
+    updateTotal();
+  }
+});
+
+btnMin.addEventListener("click", () => {
+  if (chosenHm - 500 >= 0) {
+    chosenHm -= 500;
+    hmDisplay.textContent = chosenHm;
+    updateBikePosition();
+    updateTotal();
+  }
+});
+
+btnFull.addEventListener("click", () => {
+  chosenHm = maxHm;
+  hmDisplay.textContent = chosenHm;
+  updateBikePosition();
+  updateTotal();
+});
+
+// -----------------------------
+// TOTAAL BEREKENEN
+// -----------------------------
+function updateTotal() {
+  const total = (chosenHm / 500) * chosenRate;
+  totalDisplay.textContent = total.toFixed(2).replace(".", ",");
+
+  submitBtn.disabled = !(cyclistSelect.value && sponsorInput.value && chosenRate > 0 && chosenHm > 0);
+}
+
+// -----------------------------
+// SUBMIT → KUL DONATIEPAGINA
+// -----------------------------
+submitBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const total = (chosenHm / 500) * chosenRate;
+  const amountKUL = Math.round(total * 100); // ⭐ KUL verwacht bedrag in centen
+
+  const donationUrl =
+    "https://donate.kuleuven.cloud/Coduvelo-76/~mijn-donatie?amount=" +
+    amountKUL;
+
+  window.open(donationUrl, "_blank"); // ⭐ nieuw tabblad
 });
