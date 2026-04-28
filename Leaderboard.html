@@ -1,74 +1,3 @@
-<!-- ============================================================
-     CODUVELO TOUR '76 — Leaderboard (UPDATED)
-     Squarespace Code Block — BESTAND 2
-     ============================================================ -->
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600;700&display=swap');
-
-#cdv-lb *{box-sizing:border-box;margin:0;padding:0;}
-
-#cdv-lb{
-  --bg:#ECE4DA;--box:#F6F3EC;--accent:#6F94B8;--accent-dark:#4a7399;
-  --dark:#574C3F;--dark-light:#8a7b6e;--mountain:#D9D2C7;--mountain-dark:#b5ac9e;
-  --border:#c8bdb0;--gold:#b8860b;--silver:#7a7a7a;--bronze:#8B5E3C;
-  font-family:'Source Sans 3','Helvetica Neue',sans-serif;
-  color:var(--dark);
-  max-width:720px;
-  margin:0 auto;
-  background:var(--bg);
-  border-radius:10px;
-  overflow:hidden;
-}
-
-#cdv-lb .lb-header{
-  background:var(--dark);padding:1.1rem 1.5rem;
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
-}
-#cdv-lb .lb-header-left{flex:1;min-width:200px;}
-#cdv-lb .lb-header-title{font-family:'Playfair Display',serif;font-size:20px;color:#fff;}
-#cdv-lb .lb-header-sub{font-size:10px;color:#c8bdb0;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
-#cdv-lb .lb-refresh-btn{
-  background:rgba(255,255,255,0.12);border:none;border-radius:6px;color:#fff;
-  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  padding:7px 14px;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:0.15s;
-}
-#cdv-lb .lb-refresh-btn:hover{background:rgba(255,255,255,0.22);}
-#cdv-lb .lb-refresh-btn:disabled{opacity:0.5;cursor:not-allowed;}
-
-#cdv-lb .lb-total{
-  display:none;justify-content:space-between;align-items:center;
-  padding:10px 1.5rem;background:var(--accent);
-}
-#cdv-lb .lb-total-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.85);}
-#cdv-lb .lb-total-val{font-family:'Playfair Display',serif;font-size:22px;color:#fff;}
-
-#cdv-lb .lb-date{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dark-light);text-align:center;padding:12px 0 4px;}
-
-#cdv-lb .lb-body{padding:8px 1.25rem 1.25rem;}
-
-#cdv-lb .lb-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
-#cdv-lb .lb-row:last-child{border-bottom:none;}
-
-#cdv-lb .lb-rank{font-family:'Playfair Display',serif;font-size:16px;min-width:24px;text-align:center;line-height:1;color:var(--mountain-dark);flex-shrink:0;}
-#cdv-lb .lb-rank.gold{color:var(--gold);}
-#cdv-lb .lb-rank.silver{color:var(--silver);}
-#cdv-lb .lb-rank.bronze{color:var(--bronze);}
-
-#cdv-lb .lb-name{font-size:13px;font-weight:600;color:var(--dark);min-width:140px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
-
-#cdv-lb .lb-bar-outer{flex:1;background:var(--mountain);border-radius:99px;height:18px;overflow:hidden;}
-#cdv-lb .lb-bar-fill{height:100%;border-radius:99px;width:0%;transition:width 1s cubic-bezier(0.25,0.46,0.45,0.94);background:linear-gradient(90deg, var(--accent-dark), var(--accent));}
-#cdv-lb .lb-row.gold .lb-bar-fill{background:linear-gradient(90deg,#8a6200,var(--gold));}
-#cdv-lb .lb-row.silver .lb-bar-fill{background:linear-gradient(90deg,#555,var(--silver));}
-#cdv-lb .lb-row.bronze .lb-bar-fill{background:linear-gradient(90deg,#5c3d1e,var(--bronze));}
-
-#cdv-lb .lb-amount{font-family:'Playfair Display',serif;font-size:15px;color:var(--dark);min-width:72px;text-align:right;white-space:nowrap;flex-shrink:0;}
-
-#cdv-lb .lb-empty{text-align:center;padding:2.5rem;color:var(--dark-light);font-size:13px;font-style:italic;}
-#cdv-lb .lb-medal{font-size:14px;margin-right:2px;}
-#cdv-lb .lb-error{font-size:11px;color:#9e4a3a;text-align:center;padding:10px;margin:10px;background:rgba(158,74,58,0.1);border-radius:5px;line-height:1.5;}
-</style>
-
 <div id="cdv-lb">
   <div class="lb-header">
     <div class="lb-header-left">
@@ -147,7 +76,6 @@
           + '</div>';
       });
   };
-
   function lbRender(data, body, totalBox) {
     // Check if data is valid
     if (!Array.isArray(data)) {
