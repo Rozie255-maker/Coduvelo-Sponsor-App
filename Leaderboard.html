@@ -1,3 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard – Coduvelo Tour '76</title>
+  <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+  <div id="cdv-app">
+
+    <div class="cdv-header">
+      <h1>Coduvelo Tour '76</h1>
+      <p>Healthy Heart Fund — Leaderboard</p>
+    </div>
+
+    <div class="cdv-card">
+      <div class="cdv-card-title">Klassement sponsoring</div>
+
+      <div id="cdv-lb">
+
+        <div class="lb-header">
+          <div>
+            <div class="lb-header-title">Sponsortotalen</div>
+            <div class="lb-header-sub">Live bijgewerkt</div>
+          </div>
+          <button class="lb-refresh-btn" id="lb-btn" onclick="lbLoad()">↻ Vernieuwen</button>
+        </div>
+
+        <div id="lb-total" class="lb-total">
+          <span class="lb-total-label">Totaal ingezameld</span>
+          <span class="lb-total-val" id="lb-total-val">€ 0,00</span>
+        </div>
+
+        <div class="lb-date" id="lb-date"></div>
+
+        <div id="lb-body" class="lb-body">
+          <div class="lb-empty">Klik op vernieuwen om de stand te laden.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="leaderboard.js"></script>
+</body>
+</html>
 <div id="cdv-lb">
   <div class="lb-header">
     <div class="lb-header-left">
