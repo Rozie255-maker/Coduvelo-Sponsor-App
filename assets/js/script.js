@@ -123,39 +123,46 @@
       });
   };
 
-  window.cdvConfirm = function() {
-    var cyclist = document.getElementById('cdv-cyclist').value;
-    var name = document.getElementById('cdv-sponsor-name').value.trim();
-    var totalAmount = (chosenHm / 500) * selectedRate;
-    
-    var btn = document.getElementById('cdv-submit');
-    btn.innerText = 'Verwerken...';
-    btn.disabled = true;
+window.cdvConfirm = function() {
+  var cyclist = document.getElementById('cdv-cyclist').value;
+  var name = document.getElementById('cdv-sponsor-name').value.trim();
+  var totalAmount = (chosenHm / 500) * selectedRate;
+  
+  var btn = document.getElementById('cdv-submit');
+  btn.innerText = 'Verwerken...';
+  btn.disabled = true;
 
-    // Open betaling
-    window.open('https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + Math.round(totalAmount * 100), '_blank');
-    
-    var formData = new FormData();
-    formData.append('fietser', cyclist);
-    formData.append('sponsor', name);
-    formData.append('bedrag', totalAmount.toFixed(2));
-    formData.append('hm', chosenHm);
-    formData.append('tarief', selectedRate);
-    
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: formData
-      // mode verwijderd voor standaard CORS afhandeling
-    })
-    .then(response => response.text())
-    .then(result => {
-      btn.innerText = 'Verzonden! (Betaal in het nieuwe tabblad)';
-      cdvLoadLeaderboard();
-    })
-    .catch(err => {
-      btn.innerText = 'Fout bij verzenden';
-      console.error(err);
-    });
+  // 1. Open de betaalpagina
+  window.open('https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + Math.round(totalAmount * 100), '_blank');
+  
+  // 2. Bouw het JSON object
+  var payload = {
+    fietser: cyclist,
+    sponsor: name,
+    bedrag: totalAmount.toFixed(2),
+    hm: chosenHm,
+    tarief: selectedRate
+  };
+
+  // 3. Verstuur als JSON
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(response) {
+    return response.text();
+  })
+  .then(function() {
+    btn.innerText = 'Verzonden! (Betaal in het nieuwe tabblad)';
+    cdvLoadLeaderboard(); // Vernieuw het leaderboard
+  })
+  .catch(function(err) {
+    btn.innerText = 'Fout bij verzenden';
+    console.error('Fout bij opslaan:', err);
+  });
   };
 
   document.getElementById('cdv-sponsor-name').addEventListener('input', cdvUpdateUI);
