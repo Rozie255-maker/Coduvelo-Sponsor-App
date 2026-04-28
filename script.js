@@ -1,131 +1,103 @@
-// -----------------------------
-// BASIS ELEMENTEN
-// -----------------------------
-const cyclistSelect = document.getElementById("cdv-cyclist");
-const sponsorInput = document.getElementById("cdv-sponsor");
-const rateButtons = document.querySelectorAll(".cdv-amount-btn");
-const rateInput = document.getElementById("cdv-rate");
-const hmDisplay = document.getElementById("cdv-hm");
-const hmOf = document.getElementById("cdv-hm-of");
-const btnMin = document.getElementById("cdv-btn-min");
-const btnPlus = document.getElementById("cdv-btn-plus");
-const btnFull = document.getElementById("cdv-btn-full");
-const totalDisplay = document.getElementById("cdv-total-amount");
-const submitBtn = document.getElementById("cdv-submit");
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Elements selection
+    const cyclistSelect = document.getElementById('cdv-cyclist');
+    const rateInput = document.getElementById('cdv-rate');
+    const totalDisplay = document.getElementById('cdv-total-amount');
+    const hmDisplay = document.getElementById('cdv-hm');
+    const hmOfDisplay = document.getElementById('cdv-hm-of');
+    const btnPlus = document.getElementById('cdv-btn-plus');
+    const btnMin = document.getElementById('cdv-btn-min');
+    const btnFull = document.getElementById('cdv-btn-full');
+    const btnSubmit = document.getElementById('cdv-submit');
+    const sponsorName = document.getElementById('cdv-sponsor');
+    const customWrapper = document.getElementById('cdv-custom-wrapper');
+    const amountButtons = document.querySelectorAll('.cdv-amount-btn');
 
-const bike = document.getElementById("cdv-bike");
-const path = document.getElementById("cdv-ride-path");
-const pathLength = path.getTotalLength();
+    // 2. State variables
+    let currentUnits = 0; // Number of 500hm blocks
+    let maxUnits = 0;
+    const increment = 500;
 
-let chosenRate = 0;
-let chosenHm = 0;
-let maxHm = 0;
-
-// -----------------------------
-// FIETS POSITIE OP BERG
-// -----------------------------
-function updateBikePosition() {
-  const progress = chosenHm / maxHm;
-  const point = path.getPointAtLength(progress * pathLength);
-
-bike.style.transform =
-  "translate(" +
-  (point.x - bike.offsetWidth * 0.55) +
-  "px, " +
-  (point.y - bike.offsetHeight * 0.55) +
-  "px) scaleX(-1)";
-}
-
-// -----------------------------
-// BEDRAG KIEZEN
-// -----------------------------
-rateButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    rateButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    if (btn.dataset.amount === "custom") {
-      rateInput.value = "";
-      chosenRate = 0;
-      rateInput.focus();
-    } else {
-      chosenRate = parseFloat(btn.dataset.amount);
-      rateInput.value = "";
+    // 3. Update total calculation
+    function updateTotal() {
+        const rate = parseFloat(rateInput.value) || 0;
+        const total = rate * currentUnits;
+        totalDisplay.innerText = total.toFixed(2).replace('.', ',');
+        
+        // Enable/Disable Submit button
+        const isNameValid = sponsorName.value.trim() !== "";
+        const isCyclistValid = cyclistSelect.value !== "";
+        btnSubmit.disabled = !(isNameValid && isCyclistValid && total > 0);
     }
 
-    updateTotal();
-  });
-});
+    // 4. Logic for donation rate buttons
+    amountButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            amountButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-rateInput.addEventListener("input", () => {
-  chosenRate = parseFloat(rateInput.value) || 0;
-  updateTotal();
-});
+            const amount = btn.getAttribute('data-amount');
+            if (amount === 'custom') {
+                customWrapper.style.display = 'block';
+                rateInput.focus();
+            } else {
+                customWrapper.style.display = 'none';
+                rateInput.value = amount;
+            }
+            updateTotal();
+        });
+    });
 
-// -----------------------------
-// FIETSER KIEZEN
-// -----------------------------
-cyclistSelect.addEventListener("change", () => {
-  maxHm = parseInt(cyclistSelect.selectedOptions[0].dataset.max);
-  hmOf.textContent = `max ${maxHm} hm`;
+    // 5. Logic for rate input
+    rateInput.addEventListener('input', () => {
+        updateTotal();
+    });
 
-  btnPlus.disabled = false;
-  btnMin.disabled = false;
-  btnFull.disabled = false;
+    // 6. Logic for Cyclist Selection
+    cyclistSelect.addEventListener('change', () => {
+        const selectedOption = cyclistSelect.options[cyclistSelect.selectedIndex];
+        const maxHm = parseInt(selectedOption.getAttribute('data-max')) || 0;
+        maxUnits = maxHm / increment;
+        
+        // Reset and enable stepper
+        currentUnits = 0;
+        updateStepperDisplay();
+        btnPlus.disabled = false;
+        btnMin.disabled = true;
+        btnFull.disabled = false;
+        btnFull.style.opacity = "1";
+        
+        hmOfDisplay.innerText = `Max: ${maxHm.toLocaleString()} hm`;
+        updateTotal();
+    });
 
-  updateTotal();
-});
+    // 7. Stepper logic
+    function updateStepperDisplay() {
+        hmDisplay.innerText = (currentUnits * increment).toLocaleString();
+        btnMin.disabled = currentUnits <= 0;
+        btnPlus.disabled = currentUnits >= maxUnits;
+        updateTotal();
+    }
 
-// -----------------------------
-// HM KNOPPEN
-// -----------------------------
-btnPlus.addEventListener("click", () => {
-  if (chosenHm + 500 <= maxHm) {
-    chosenHm += 500;
-    hmDisplay.textContent = chosenHm;
-    updateBikePosition();
-    updateTotal();
-  }
-});
+    btnPlus.addEventListener('click', () => {
+        if (currentUnits < maxUnits) {
+            currentUnits++;
+            updateStepperDisplay();
+        }
+    });
 
-btnMin.addEventListener("click", () => {
-  if (chosenHm - 500 >= 0) {
-    chosenHm -= 500;
-    hmDisplay.textContent = chosenHm;
-    updateBikePosition();
-    updateTotal();
-  }
-});
+    btnMin.addEventListener('click', () => {
+        if (currentUnits > 0) {
+            currentUnits--;
+            updateStepperDisplay();
+        }
+    });
 
-btnFull.addEventListener("click", () => {
-  chosenHm = maxHm;
-  hmDisplay.textContent = chosenHm;
-  updateBikePosition();
-  updateTotal();
-});
+    btnFull.addEventListener('click', () => {
+        currentUnits = maxUnits;
+        updateStepperDisplay();
+    });
 
-// -----------------------------
-// TOTAAL BEREKENEN
-// -----------------------------
-function updateTotal() {
-  const total = (chosenHm / 500) * chosenRate;
-  totalDisplay.textContent = total.toFixed(2).replace(".", ",");
-
-  submitBtn.disabled = !(cyclistSelect.value && sponsorInput.value && chosenRate > 0 && chosenHm > 0);
-}
-
-// -----------------------------
-// SUBMIT → KUL DONATIEPAGINA
-// -----------------------------
-submitBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const total = (chosenHm / 500) * chosenRate;
-const amountKUL = Math.round(total * 100);
-
-const donationUrl =
-  "https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=" +
-  amountKUL;
-
-window.open(donationUrl, "_blank");
+    // 8. Name change listener
+    sponsorName.addEventListener('input', updateTotal);
 });
