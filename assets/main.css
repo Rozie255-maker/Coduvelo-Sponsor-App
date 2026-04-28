@@ -190,35 +190,46 @@ input[type="number"] {
 }
 
 .cdv-finish-flag {
-  position:absolute;
-  right:6px;
-  top:6px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.cdv-flag-red {
-  width:18px;
-  height:12px;
-  background:var(--red);
-  border-radius:2px 2px 2px 0;
+  position: absolute;
+  top: -10px;
+  right: -6px;
+  transform: translate(0, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .cdv-flag-pole {
-  width:2px;
-  height:22px;
-  background:#ddd;
+  width: 3px;
+  height: 28px;
+  background: #444;
+  border-radius: 2px;
+}
+
+.cdv-flag-red {
+  width: 22px;
+  height: 14px;
+  background: linear-gradient(135deg, #ff4d4d, #d60000);
+  border-radius: 2px 4px 4px 2px;
+  margin-bottom: 2px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.25);
+  animation: cdvFlagWave 1.8s ease-in-out infinite;
+}
+
+/* Kleine golf-animatie */
+@keyframes cdvFlagWave {
+  0%   { transform: rotate(0deg) translateX(0); }
+  50%  { transform: rotate(3deg) translateX(2px); }
+  100% { transform: rotate(0deg) translateX(0); }
 }
 
 #cdv-bike {
-  position:absolute;
-  left:0;
-  bottom:10px;
-  transform:translateX(0);
-  transition:transform 0.3s ease-out;
-  font-size:18px;
+  position: absolute;
+  transform: translate(-12px, -12px);
+  font-size: clamp(22px, 4vw, 38px); /* automatisch schalen */
+  line-height: 1;
 }
+
 
 .cdv-fw {
   font-size:10px;
