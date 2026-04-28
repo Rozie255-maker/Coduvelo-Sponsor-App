@@ -114,6 +114,37 @@
     document.getElementById('cdv-submit').disabled = !(cyclist && name && chosenHm > 0 && selectedRate > 0);
   };
 
+  // Leaderboard fetch functie
+  window.cdvLoadLeaderboard = function() {
+    var container = document.getElementById('cdv-leaderboard-container');
+    if (!container) return; // Stop als het element niet bestaat op de pagina
+    
+    fetch(SCRIPT_URL + '?action=leaderboard')
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        if (data.error) {
+          container.innerHTML = 'Fout bij laden: ' + data.error;
+          return;
+        }
+        
+        // Sorteer op totaal bedrag (hoogste eerst)
+        data.sort(function(a, b) { return b.total - a.total; });
+        
+        var html = data.map(function(item) {
+          return '<div class="cdv-leaderboard-row">' +
+                 '<span class="cdv-leaderboard-name">' + item.name + '</span>' +
+                 '<span class="cdv-leaderboard-amount">€ ' + item.total.toFixed(2).replace('.', ',') + '</span>' +
+                 '</div>';
+        }).join('');
+        
+        container.innerHTML = html || '<p>Nog geen donaties.</p>';
+      })
+      .catch(function(err) {
+        container.innerHTML = 'Kon leaderboard niet laden.';
+        console.error(err);
+      });
+  };
+
   window.cdvConfirm = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
@@ -124,22 +155,12 @@
     btn.innerText = 'Verwerken...';
     btn.disabled  = true;
 
-    // Direct openen (User-initiated = geen pop-up blokkade)
     var amountKUL = Math.round(totalAmount * 100);
     window.open(
       'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
       '_blank'
     );
     
-    // Lokale opslag
-    try {
-      localStorage.setItem('cdv_lastDonation', JSON.stringify({
-        cyclist: cyclist, sponsor: name, amount: totalFormatted, 
-        hm: chosenHm, rate: selectedRate, timestamp: new Date().toISOString()
-      }));
-    } catch(e) { console.log('LocalStorage niet beschikbaar'); }
-
-    // Achtergrond verzending
     var formData = new FormData();
     formData.append('fietser', cyclist);
     formData.append('sponsor', name);
@@ -154,7 +175,8 @@
     })
     .then(function() {
       btn.innerText = 'Verzonden! (Betaal in het nieuwe tabblad)';
-      console.log('Data verzonden');
+      // Vernieuw het leaderboard na een geslaagde donatie
+      cdvLoadLeaderboard(); 
     })
     .catch(function(err) {
       btn.innerText = 'Fout bij verzenden';
@@ -171,6 +193,7 @@
   function init() { 
     positionFlag(); 
     cdvUpdateUI(); 
+    cdvLoadLeaderboard(); // Leaderboard laden bij start
   }
   
   if(document.readyState === 'complete') { 
