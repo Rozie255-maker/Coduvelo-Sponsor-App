@@ -20,7 +20,6 @@
       isCustom = false;
       selectedRate = parseFloat(amount);
       document.getElementById('cdv-custom-wrapper').classList.remove('show');
-      
       btns.forEach(function(b) {
         if (parseFloat(b.dataset.amount) === parseFloat(amount)) {
           b.classList.add('active');
@@ -32,23 +31,19 @@
 
   window.cdvCustomAmountChange = function() {
     var val = parseFloat(document.getElementById('cdv-custom-amount').value);
-    if (!isNaN(val) && val > 0) {
-      selectedRate = val;
-    } else {
-      selectedRate = 0;
-    }
+    selectedRate = (!isNaN(val) && val > 0) ? val : 0;
     cdvUpdateUI();
   };
 
   window.cdvCyclistChange = function() {
     var sel = document.getElementById('cdv-cyclist');
-    maxHm  = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
+    maxHm = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
     chosenHm = 0;
-    document.getElementById('cdv-btn-min').disabled  = false;
+    document.getElementById('cdv-btn-min').disabled = false;
     document.getElementById('cdv-btn-plus').disabled = false;
     document.getElementById('cdv-btn-full').disabled = false;
     document.getElementById('cdv-btn-full').style.opacity = '1';
-    document.getElementById('cdv-bike').style.visibility  = 'visible';
+    document.getElementById('cdv-bike').style.visibility = 'visible';
     cdvMoveBike(); 
     cdvUpdateUI();
   };
@@ -86,9 +81,9 @@
     var path = document.getElementById('cdv-ride-path');
     var bike = document.getElementById('cdv-bike');
     try {
-      var s     = getScale();
+      var s = getScale();
       var ratio = maxHm > 0 ? chosenHm / maxHm : 0;
-      var pt    = path.getPointAtLength(path.getTotalLength() * ratio);
+      var pt = path.getPointAtLength(path.getTotalLength() * ratio);
       bike.style.left = (pt.x * s.x) + 'px';
       bike.style.top  = (pt.y * s.y) + 'px';
       document.getElementById('cdv-fw').style.opacity = (chosenHm >= maxHm && maxHm > 0) ? '1' : '0';
@@ -97,110 +92,77 @@
 
   window.cdvUpdateUI = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
-    var name    = document.getElementById('cdv-sponsor-name').value.trim();
-    
+    var name = document.getElementById('cdv-sponsor-name').value.trim();
     document.getElementById('cdv-chosen-hm').innerText = chosenHm.toLocaleString('nl-BE');
-    document.getElementById('cdv-hm-of').innerText      = maxHm > 0 ? 'doel: ' + maxHm.toLocaleString('nl-BE') + ' hm' : 'Kies eerst een fietser';
-    
+    document.getElementById('cdv-hm-of').innerText = maxHm > 0 ? 'doel: ' + maxHm.toLocaleString('nl-BE') + ' hm' : 'Kies eerst een fietser';
     var totalAmount = (chosenHm / 500) * selectedRate;
     document.getElementById('cdv-total').innerText = totalAmount.toFixed(2).replace('.', ',');
-    
-    if (selectedRate > 0) {
-      document.getElementById('cdv-rate-display').innerText = '€ ' + selectedRate.toFixed(2).replace('.', ',') + ' per 500 hm';
-    } else {
-      document.getElementById('cdv-rate-display').innerText = '';
-    }
-    
+    document.getElementById('cdv-rate-display').innerText = (selectedRate > 0) ? '€ ' + selectedRate.toFixed(2).replace('.', ',') + ' per 500 hm' : '';
     document.getElementById('cdv-submit').disabled = !(cyclist && name && chosenHm > 0 && selectedRate > 0);
   };
 
-  // Leaderboard fetch functie
   window.cdvLoadLeaderboard = function() {
     var container = document.getElementById('cdv-leaderboard-container');
-    if (!container) return; // Stop als het element niet bestaat op de pagina
+    if (!container) return;
     
     fetch(SCRIPT_URL + '?action=leaderboard')
-      .then(function(response) { return response.json(); })
-      .then(function(data) {
-        if (data.error) {
-          container.innerHTML = 'Fout bij laden: ' + data.error;
-          return;
-        }
-        
-        // Sorteer op totaal bedrag (hoogste eerst)
-        data.sort(function(a, b) { return b.total - a.total; });
-        
-        var html = data.map(function(item) {
-          return '<div class="cdv-leaderboard-row">' +
-                 '<span class="cdv-leaderboard-name">' + item.name + '</span>' +
-                 '<span class="cdv-leaderboard-amount">€ ' + item.total.toFixed(2).replace('.', ',') + '</span>' +
-                 '</div>';
-        }).join('');
-        
-        container.innerHTML = html || '<p>Nog geen donaties.</p>';
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        data.sort((a, b) => b.total - a.total);
+        container.innerHTML = data.map(item => 
+          `<div class="cdv-leaderboard-row">
+            <span class="cdv-leaderboard-name">${item.name}</span>
+            <span class="cdv-leaderboard-amount">€ ${parseFloat(item.total).toFixed(2).replace('.', ',')}</span>
+          </div>`
+        ).join('') || '<p>Nog geen donaties.</p>';
       })
-      .catch(function(err) {
-        container.innerHTML = 'Kon leaderboard niet laden.';
+      .catch(err => {
         console.error(err);
+        container.innerHTML = 'Kon leaderboard niet laden.';
       });
   };
 
   window.cdvConfirm = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
-    var name    = document.getElementById('cdv-sponsor-name').value.trim();
+    var name = document.getElementById('cdv-sponsor-name').value.trim();
     var totalAmount = (chosenHm / 500) * selectedRate;
-    var totalFormatted = totalAmount.toFixed(2);
     
     var btn = document.getElementById('cdv-submit');
     btn.innerText = 'Verwerken...';
-    btn.disabled  = true;
+    btn.disabled = true;
 
-    var amountKUL = Math.round(totalAmount * 100);
-    window.open(
-      'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
-      '_blank'
-    );
+    // Open betaling
+    window.open('https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + Math.round(totalAmount * 100), '_blank');
     
     var formData = new FormData();
     formData.append('fietser', cyclist);
     formData.append('sponsor', name);
-    formData.append('bedrag', totalFormatted);
+    formData.append('bedrag', totalAmount.toFixed(2));
     formData.append('hm', chosenHm);
     formData.append('tarief', selectedRate);
     
     fetch(SCRIPT_URL, {
       method: 'POST',
-      body: formData,
-      mode: 'no-cors'
+      body: formData
+      // mode verwijderd voor standaard CORS afhandeling
     })
-    .then(function() {
+    .then(response => response.text())
+    .then(result => {
       btn.innerText = 'Verzonden! (Betaal in het nieuwe tabblad)';
-      // Vernieuw het leaderboard na een geslaagde donatie
-      cdvLoadLeaderboard(); 
+      cdvLoadLeaderboard();
     })
-    .catch(function(err) {
+    .catch(err => {
       btn.innerText = 'Fout bij verzenden';
-      console.error('Fout bij opslaan:', err);
+      console.error(err);
     });
   };
 
   document.getElementById('cdv-sponsor-name').addEventListener('input', cdvUpdateUI);
-  window.addEventListener('resize', function() { 
-    positionFlag(); 
-    cdvMoveBike(); 
-  });
+  window.addEventListener('resize', () => { positionFlag(); cdvMoveBike(); });
   
-  function init() { 
-    positionFlag(); 
-    cdvUpdateUI(); 
-    cdvLoadLeaderboard(); // Leaderboard laden bij start
-  }
+  function init() { positionFlag(); cdvUpdateUI(); cdvLoadLeaderboard(); }
   
-  if(document.readyState === 'complete') { 
-    setTimeout(init, 100);
-  } else { 
-    window.addEventListener('load', function(){ 
-      setTimeout(init, 100); 
-    });
-  }
+  if(document.readyState === 'complete') { setTimeout(init, 100); } 
+  else { window.addEventListener('load', () => setTimeout(init, 100)); }
 })();
