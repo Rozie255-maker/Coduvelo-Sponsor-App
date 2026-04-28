@@ -7,24 +7,21 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+    ```
 
-<div id="cdv-app">
-  <div class="cdv-header">
-    <h1>Leaderboard</h1>
-    <p>Huidige tussenstand per fietser</p>
-  </div>
+### 2. Update `index.html`
+Open your `index.html` file (your donation form). Add the link to the `<head>` section. If you have any internal `<style>` tags in this file that are redundant, remove them now:
 
-  <div class="cdv-card">
-    <div id="cdv-leaderboard-container">
-      <p>Leaderboard aan het laden...</p>
-    </div>
-    
-    <div style="margin-top: 20px; text-align: center;">
-      <a href="index.html" class="cdv-btn cdv-btn-outline">← Terug naar donatiepagina</a>
-    </div>
-  </div>
-</div>
+```html
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsoring - Coduvelo Tour '76</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    ```
 
-<script src="assets/js/leaderboard.js"></script>
-</body>
-</html>
+Once you save these changes and refresh your browser, both pages will load the styles from `assets/css/style.css` automatically.
