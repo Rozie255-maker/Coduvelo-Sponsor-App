@@ -85,3 +85,13 @@
 
 #cdv-app .cdv-donate-note{font-size:12px;color:var(--dark-light);text-align:center;margin-bottom:12px;line-height:1.5;}
 #cdv-app .cdv-per-hm{font-size:10px;color:var(--dark-light);text-align:center;margin-top:8px;}
+
+#cdv-leaderboard-container { margin-top: 15px; }
+.cdv-leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+.cdv-leaderboard-name { font-weight: 600; }
+.cdv-leaderboard-amount { font-family: monospace; color: #2c3e50; }
