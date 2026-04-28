@@ -33,7 +33,7 @@ bike.style.transform =
   (point.x - bike.offsetWidth * 0.55) +
   "px, " +
   (point.y - bike.offsetHeight * 0.75) +
-  "px) scaleX(-1)";
+  "px) scaleX(-1)";}
 
 // -----------------------------
 // BEDRAG KIEZEN
@@ -58,7 +58,7 @@ rateButtons.forEach(btn => {
 
 rateInput.addEventListener("input", () => {
   chosenRate = parseFloat(rateInput.value) || 0;
-  updateTotal();}
+  updateTotal();
 });
 
 // -----------------------------
