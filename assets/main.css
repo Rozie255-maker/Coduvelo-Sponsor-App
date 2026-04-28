@@ -311,4 +311,195 @@ input[type="number"] {
     font-size:19px;
   }
 }
+/* -------------------------------------------------- */
+/* LEADERBOARD — HEADER */
+/* -------------------------------------------------- */
+
+#cdv-lb {
+  background: var(--box);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.lb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.lb-header-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.lb-header-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--dark-light);
+  margin-top: 2px;
+}
+
+.lb-refresh-btn {
+  padding: 8px 12px;
+  border-radius: 7px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.lb-refresh-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — TOTAL */
+/* -------------------------------------------------- */
+
+.lb-total {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.lb-total-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--dark-light);
+}
+
+.lb-total-val {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — DATE */
+/* -------------------------------------------------- */
+
+.lb-date {
+  font-size: 11px;
+  color: var(--dark-light);
+  margin-bottom: 12px;
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — EMPTY STATE */
+/* -------------------------------------------------- */
+
+.lb-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--dark-light);
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — ROWS */
+/* -------------------------------------------------- */
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr 90px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lb-row.gold   { background: rgba(255,215,0,0.08); }
+.lb-row.silver { background: rgba(192,192,192,0.10); }
+.lb-row.bronze { background: rgba(205,127,50,0.10); }
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — RANK */
+/* -------------------------------------------------- */
+
+.lb-rank {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.lb-rank.gold   { color: #d4af37; }
+.lb-rank.silver { color: #bfc1c2; }
+.lb-rank.bronze { color: #cd7f32; }
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — NAME */
+/* -------------------------------------------------- */
+
+.lb-name {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lb-medal {
+  font-size: 18px;
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — PROGRESS BAR */
+/* -------------------------------------------------- */
+
+.lb-bar-outer {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lb-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.6s ease-out;
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — AMOUNT */
+/* -------------------------------------------------- */
+
+.lb-amount {
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* -------------------------------------------------- */
+/* LEADERBOARD — RESPONSIVE */
+/* -------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .lb-row {
+    grid-template-columns: 30px 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .lb-bar-outer {
+    grid-column: 1 / 3;
+    margin-top: 6px;
+  }
+
+  .lb-amount {
+    grid-column: 1 / 3;
+    text-align: left;
+    margin-top: 6px;
+  }
+}
 
