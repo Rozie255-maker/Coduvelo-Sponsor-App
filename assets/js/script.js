@@ -1,6 +1,6 @@
 (function(){
   // GOOGLE APPS SCRIPT URL
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSQcV9jpEpgnDoes3A9OLZk1nrnPdKGAzh2qZSB2Ffa7mK_2gM2KsPH6zz5T4_Ipgr/exec';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCW8AMmmPfL_0Ztzq4h1GvlKemmhaXTszpeoCimUQjb7YjzPttOZ97aPFuvx30d45L/exec';
   
   var chosenHm = 0, maxHm = 0;
   var selectedRate = 0;
