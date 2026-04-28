@@ -264,6 +264,22 @@ input[type="number"] {
   margin-bottom: -6px;
 }
 
+.bike-container {
+    /* The path creates the trajectory. Modify the M and L values for your specific slope */
+    offset-path: path('M 0 100 L 500 0');
+    animation: ride 5s linear infinite;
+    offset-rotate: 0deg; /* Keeps the bike upright */
+}
+
+.bike-image {
+    width: 50px; /* Adjust as needed */
+    transform: scaleX(-1); /* Flips the image to face right */
+}
+
+@keyframes ride {
+    from { offset-distance: 0%; }
+    to { offset-distance: 100%; }
+}
 /* Stepper & totals */
 
 .cdv-stepper {
