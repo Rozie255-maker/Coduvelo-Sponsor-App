@@ -336,6 +336,18 @@ input[type="number"] {
 }
 
 /* Responsive */
+#cdv-custom-wrapper {
+  display: none;
+  margin-top: 12px;
+}
+
+#cdv-custom-wrapper.show {
+  display: block;
+}
+
+#cdv-rate {
+  font-size: clamp(14px, 3vw, 17px);
+}
 
 @media (max-width:480px) {
   body {
