@@ -116,11 +116,11 @@ submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
 
   const total = (chosenHm / 500) * chosenRate;
-  const amountKUL = Math.round(total * 100); // ⭐ KUL verwacht bedrag in centen
+const amountKUL = Math.round(total * 100);
 
-  const donationUrl =
-    "https://donate.kuleuven.cloud/Coduvelo-76/~mijn-donatie?amount=" +
-    amountKUL;
+const donationUrl =
+  "https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=" +
+  amountKUL;
 
-  window.open(donationUrl, "_blank"); // ⭐ nieuw tabblad
+window.open(donationUrl, "_blank");
 });
