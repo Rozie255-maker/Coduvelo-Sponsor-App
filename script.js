@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const sponsorName = document.getElementById('cdv-sponsor');
     const customWrapper = document.getElementById('cdv-custom-wrapper');
     const amountButtons = document.querySelectorAll('.cdv-amount-btn');
+    
+    // Donation input selector
+    const donationInput = document.getElementById('donation-amount');
 
     // 2. State variables
     let currentUnits = 0; // Number of 500hm blocks
@@ -22,7 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTotal() {
         const rate = parseFloat(rateInput.value) || 0;
         const total = rate * currentUnits;
+        
+        // Update visual display (comma for human readability)
         totalDisplay.innerText = total.toFixed(2).replace('.', ',');
+        
+        // Update form input (dot for computer/database compatibility)
+        if (donationInput) {
+            donationInput.value = total.toFixed(2);
+        }
         
         // Enable/Disable Submit button
         const isNameValid = sponsorName.value.trim() !== "";
