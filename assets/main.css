@@ -265,7 +265,7 @@ input[type="number"] {
     
     animation: move-along-path 5s linear infinite;
     
-    /* Change this to 1 to flip it the other way */
+    /* Set to 1 to face right. If the bike faces left, change this to -1 */
     transform: scaleX(1); 
     
     transform-origin: center;
