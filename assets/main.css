@@ -252,13 +252,27 @@ input[type="number"] {
   50%  { transform: rotate(3deg) translateX(2px); }
   100% { transform: rotate(0deg) translateX(0); }
 }
+/* Bike Movement and Orientation */
 #cdv-bike {
-  position: absolute;
-  font-size: clamp(26px, 4.5vw, 40px);
-  transition: transform 0.25s ease-out;
-  line-height: 1;
-  transform-origin: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Must match the path used in the SVG */
+    offset-path: path('M0 125 C40 110,90 95,140 98 C190 102,240 68,295 38 C335 16,368 18,400 4');
+    offset-rotate: 0deg;
+    animation: move-along-path 5s linear infinite;
+    /* This flips the bike to face right */
+    transform: scaleX(-1);
+    transform-origin: center;
+    /* Keeps the bike on top of the path */
+    z-index: 10;
 }
+
+@keyframes move-along-path {
+    from { offset-distance: 0%; }
+    to { offset-distance: 100%; }
+}
+
 #cdv-fw {
   font-size: clamp(16px, 3vw, 28px);
   margin-bottom: -6px;
