@@ -179,14 +179,22 @@ input[type="number"] {
 /* Mountain / progress */
 
 .cdv-mountain-wrap {
-  position:relative;
-  margin:0.5rem 0 1rem;
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 #cdv-svg-element {
-  width:100%;
-  height:auto;
-  display:block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+}
+
+#cdv-ride-path {
+  stroke: #6b5f52;
+  stroke-width: 3;
+  stroke-linecap: round;
 }
 
 .cdv-finish-flag {
