@@ -4,24 +4,419 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard - Coduvelo Tour '76</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            --bg: #ECE4DA;
+            --box: #F6F3EC;
+            --accent: #6F94B8;
+            --accent-dark: #4a7399;
+            --dark: #574C3F;
+            --dark-light: #8a7b6e;
+            --mountain: #D9D2C7;
+            --mountain-dark: #b5ac9e;
+            --red: #9e4a3a;
+            --border: #c8bdb0;
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --bronze: #CD7F32;
+            
+            background: var(--bg);
+            font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+            color: var(--dark);
+            padding: 0 0 40px;
+        }
+
+        .cdv-header {
+            background: var(--dark);
+            padding: 1.5rem 1.5rem 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cdv-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #fff;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .cdv-header p {
+            font-size: 11px;
+            color: #c8bdb0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        .cdv-card {
+            background: var(--box);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cdv-card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid var(--mountain-dark);
+            text-align: center;
+        }
+
+        /* Podium Styles */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 15px;
+            margin: 2rem 0 2.5rem;
+            padding: 0 1rem;
+        }
+
+        .podium-place {
+            text-align: center;
+            flex: 1;
+            max-width: 180px;
+        }
+
+        .podium-medal {
+            font-size: 48px;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .podium-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .podium-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--accent-dark);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .podium-base {
+            background: linear-gradient(135deg, var(--mountain) 0%, var(--mountain-dark) 100%);
+            border: 1.5px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            padding: 15px 10px 8px;
+            position: relative;
+        }
+
+        .podium-place.first .podium-base {
+            height: 120px;
+            background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+            border-color: #B8860B;
+        }
+
+        .podium-place.second .podium-base {
+            height: 90px;
+            background: linear-gradient(135deg, var(--silver) 0%, #A8A8A8 100%);
+            border-color: #808080;
+        }
+
+        .podium-place.third .podium-base {
+            height: 70px;
+            background: linear-gradient(135deg, var(--bronze) 0%, #A0522D 100%);
+            border-color: #8B4513;
+        }
+
+        .podium-rank {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Leaderboard List Styles */
+        .leaderboard-list {
+            margin-top: 1.5rem;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .leaderboard-row:hover {
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(111, 148, 184, 0.1);
+        }
+
+        .leaderboard-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .leaderboard-rank {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark-light);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--dark);
+        }
+
+        .leaderboard-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-dark);
+            white-space: nowrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--dark-light);
+            font-style: italic;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--red);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--dark-light);
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .podium-container {
+                gap: 10px;
+                padding: 0 0.5rem;
+            }
+
+            .podium-medal {
+                font-size: 36px;
+            }
+
+            .podium-name {
+                font-size: 13px;
+                min-height: 35px;
+            }
+
+            .podium-amount {
+                font-size: 20px;
+            }
+
+            .podium-rank {
+                font-size: 24px;
+            }
+
+            .podium-place.first .podium-base {
+                height: 100px;
+            }
+
+            .podium-place.second .podium-base {
+                height: 75px;
+            }
+
+            .podium-place.third .podium-base {
+                height: 60px;
+            }
+
+            .leaderboard-row {
+                padding: 12px 14px;
+            }
+
+            .leaderboard-rank {
+                font-size: 16px;
+                min-width: 25px;
+            }
+
+            .leaderboard-name {
+                font-size: 14px;
+            }
+
+            .leaderboard-amount {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-    ```
 
-### 2. Update `index.html`
-Open your `index.html` file (your donation form). Add the link to the `<head>` section. If you have any internal `<style>` tags in this file that are redundant, remove them now:
+<div class="cdv-header">
+    <h1>Coduvelo Tour '76</h1>
+    <p>Leaderboard | Sponsorbedragen per fietser</p>
+</div>
 
-```html
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sponsoring - Coduvelo Tour '76</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-    ```
+<div class="container">
+    <div class="cdv-card">
+        <div class="cdv-card-title">🏆 Top 3 Fietsers</div>
+        <div id="podium-container">
+            <div class="loading">Leaderboard aan het laden...</div>
+        </div>
+    </div>
 
-Once you save these changes and refresh your browser, both pages will load the styles from `assets/css/style.css` automatically.
+    <div class="cdv-card">
+        <div class="cdv-card-title">Volledige Tussenstand</div>
+        <div id="leaderboard-container">
+            <div class="loading">Gegevens worden geladen...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4bj3VEbNYGwhgaeB3m3v42IpqxW2X6UVPfBBRpwY7zqXU9iMLF-IqBz7zHlA4zTbF/exec';
+    
+    function loadLeaderboard() {
+        var podiumContainer = document.getElementById('podium-container');
+        var leaderboardContainer = document.getElementById('leaderboard-container');
+        
+        fetch(SCRIPT_URL + '?action=leaderboard')
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Netwerk respons was niet ok');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.error) {
+                    podiumContainer.innerHTML = '<div class="error">Fout bij laden: ' + data.error + '</div>';
+                    leaderboardContainer.innerHTML = '<div class="error">Fout bij laden: ' + data.error + '</div>';
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    podiumContainer.innerHTML = '<div class="no-data">Nog geen donaties binnengekomen.</div>';
+                    leaderboardContainer.innerHTML = '<div class="no-data">Nog geen donaties binnengekomen.</div>';
+                    return;
+                }
+                
+                data.sort(function(a, b) { return b.total - a.total; });
+                
+                renderPodium(data.slice(0, 3), podiumContainer);
+                renderFullLeaderboard(data, leaderboardContainer);
+            })
+            .catch(function(err) {
+                podiumContainer.innerHTML = '<div class="error">Kon leaderboard niet laden. Probeer het later opnieuw.</div>';
+                leaderboardContainer.innerHTML = '<div class="error">Kon leaderboard niet laden. Probeer het later opnieuw.</div>';
+                console.error('Leaderboard fout:', err);
+            });
+    }
+    
+    function renderPodium(topThree, container) {
+        if (topThree.length === 0) {
+            container.innerHTML = '<div class="no-data">Nog geen top 3 beschikbaar.</div>';
+            return;
+        }
+        
+        var medals = ['🥇', '🥈', '🥉'];
+        var classes = ['first', 'second', 'third'];
+        
+        var podiumOrder = topThree.length >= 2 ? [1, 0, 2] : topThree.length === 1 ? [0] : [0, 1];
+        
+        var html = '<div class="podium-container">';
+        
+        podiumOrder.forEach(function(index) {
+            if (index < topThree.length && topThree[index]) {
+                var item = topThree[index];
+                var position = index;
+                
+                html += '<div class="podium-place ' + classes[position] + '">';
+                html += '<div class="podium-medal">' + medals[position] + '</div>';
+                html += '<div class="podium-name">' + escapeHtml(item.name) + '</div>';
+                html += '<div class="podium-amount">€ ' + formatAmount(item.total) + '</div>';
+                html += '<div class="podium-base">';
+                html += '<div class="podium-rank">' + (position + 1) + '</div>';
+                html += '</div>';
+                html += '</div>';
+            }
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function renderFullLeaderboard(data, container) {
+        var html = '<div class="leaderboard-list">';
+        
+        data.forEach(function(item, index) {
+            var rank = index + 1;
+            
+            html += '<div class="leaderboard-row">';
+            html += '<div class="leaderboard-left">';
+            html += '<div class="leaderboard-rank">' + rank + '.</div>';
+            html += '<div class="leaderboard-name">' + escapeHtml(item.name) + '</div>';
+            html += '</div>';
+            html += '<div class="leaderboard-amount">€ ' + formatAmount(item.total) + '</div>';
+            html += '</div>';
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function formatAmount(amount) {
+        return amount.toFixed(2).replace('.', ',');
+    }
+    
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
+    } else {
+        loadLeaderboard();
+    }
+})();
+</script>
+
+</body>
+</html>
