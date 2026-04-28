@@ -1,2 +1,2 @@
 # Coduvelo-Sponsor-App
-Coduvelo sponsor app op website
+his is a sponsorship application for the "Coduvelo Tour '76" (Healthy Heart Fund).
