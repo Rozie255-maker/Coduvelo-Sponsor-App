@@ -12,40 +12,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const sponsorName = document.getElementById('cdv-sponsor');
     const customWrapper = document.getElementById('cdv-custom-wrapper');
     const amountButtons = document.querySelectorAll('.cdv-amount-btn');
-    
-    // Donation input selector
     const donationInput = document.getElementById('donation-amount');
+    
+    // Elements for movement and effects
+    const bike = document.getElementById('cdv-bike');
+    const fireworks = document.getElementById('cdv-fw');
 
     // 2. State variables
-    let currentUnits = 0; // Number of 500hm blocks
+    let currentUnits = 0; 
     let maxUnits = 0;
     const increment = 500;
 
-    // 3. Update total calculation
+    // 3. Update total calculation and form
     function updateTotal() {
         const rate = parseFloat(rateInput.value) || 0;
         const total = rate * currentUnits;
-        
-        // Update visual display (comma for human readability)
         totalDisplay.innerText = total.toFixed(2).replace('.', ',');
         
-        // Update form input (dot for computer/database compatibility)
         if (donationInput) {
             donationInput.value = total.toFixed(2);
         }
         
-        // Enable/Disable Submit button
         const isNameValid = sponsorName.value.trim() !== "";
         const isCyclistValid = cyclistSelect.value !== "";
         btnSubmit.disabled = !(isNameValid && isCyclistValid && total > 0);
     }
 
-    // 4. Logic for donation rate buttons
+    // 4. Bike Movement and Fireworks Logic
+    function updateBikePosition() {
+        const percentage = maxUnits > 0 ? (currentUnits / maxUnits) * 100 : 0;
+        bike.style.offsetDistance = percentage + '%';
+
+        // Fix 3: Show fireworks only at the top (100%)
+        if (currentUnits === maxUnits && maxUnits > 0) {
+            fireworks.classList.add('visible');
+        } else {
+            fireworks.classList.remove('visible');
+        }
+    }
+
+    // 5. Stepper display update
+    function updateStepperDisplay() {
+        hmDisplay.innerText = (currentUnits * increment).toLocaleString();
+        btnMin.disabled = currentUnits <= 0;
+        btnPlus.disabled = currentUnits >= maxUnits;
+        updateTotal();
+        updateBikePosition(); // Trigger movement
+    }
+
+    // 6. Event Listeners
     amountButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             amountButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             const amount = btn.getAttribute('data-amount');
             if (amount === 'custom') {
                 customWrapper.style.display = 'block';
@@ -58,36 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Logic for rate input
-    rateInput.addEventListener('input', () => {
-        updateTotal();
-    });
-
-    // 6. Logic for Cyclist Selection
     cyclistSelect.addEventListener('change', () => {
         const selectedOption = cyclistSelect.options[cyclistSelect.selectedIndex];
         const maxHm = parseInt(selectedOption.getAttribute('data-max')) || 0;
         maxUnits = maxHm / increment;
-        
-        // Reset and enable stepper
         currentUnits = 0;
         updateStepperDisplay();
         btnPlus.disabled = false;
         btnMin.disabled = true;
         btnFull.disabled = false;
         btnFull.style.opacity = "1";
-        
         hmOfDisplay.innerText = `Max: ${maxHm.toLocaleString()} hm`;
-        updateTotal();
     });
-
-    // 7. Stepper logic
-    function updateStepperDisplay() {
-        hmDisplay.innerText = (currentUnits * increment).toLocaleString();
-        btnMin.disabled = currentUnits <= 0;
-        btnPlus.disabled = currentUnits >= maxUnits;
-        updateTotal();
-    }
 
     btnPlus.addEventListener('click', () => {
         if (currentUnits < maxUnits) {
@@ -108,6 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStepperDisplay();
     });
 
-    // 8. Name change listener
+    // Fix 2: Redirect to KUL Donation Page
+    btnSubmit.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        window.location.href = "https://donate.kuleuven.cloud/Coduvelo-76/"; 
+    });
+
     sponsorName.addEventListener('input', updateTotal);
+    rateInput.addEventListener('input', updateTotal);
 });
