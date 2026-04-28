@@ -58,7 +58,7 @@ rateButtons.forEach(btn => {
 
 rateInput.addEventListener("input", () => {
   chosenRate = parseFloat(rateInput.value) || 0;
-  updateTotal();
+  updateTotal();}
 });
 
 // -----------------------------
