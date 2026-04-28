@@ -30,6 +30,7 @@ function updateBikePosition() {
 
 bike.style.transform =
   `translate(${point.x - (bike.offsetWidth * 0.55)}px, ${point.y - (bike.offsetHeight * 0.75)}px) scaleX(-1)`;
+`;
 
 // -----------------------------
 // BEDRAG KIEZEN
