@@ -259,15 +259,24 @@ input[type="number"] {
     left: 0;
     /* Must match the path used in the SVG */
     offset-path: path('M0 125 C40 110,90 95,140 98 C190 102,240 68,295 38 C335 16,368 18,400 4');
-    offset-rotate: auto; 
+    offset-rotate: auto;
     
-    /* REMOVED: animation: move-along-path... */
-    /* ADDED: transition for smooth manual movement */
+    /* Crucial: Start at 0% and allow JS to control the movement */
+    offset-distance: 0%;
     transition: offset-distance 0.3s ease-out;
     
-    transform: scaleX(-1); 
+    /* Correct direction */
+    transform: scaleX(-1);
     transform-origin: center;
     z-index: 10;
+}
+
+#cdv-fw {
+    display: none; 
+}
+
+#cdv-fw.visible {
+    display: block; 
 }
 
 @keyframes move-along-path {
