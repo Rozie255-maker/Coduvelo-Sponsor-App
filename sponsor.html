@@ -9,7 +9,7 @@
 
 <body>
   <div id="cdv-app">
-
+    
     <div class="cdv-header">
       <h1>Coduvelo Tour '76</h1>
       <p>Healthy Heart Fund — Sponsor een fietser</p>
@@ -23,7 +23,6 @@
 
         <label>Fietser</label>
         <select id="cdv-cyclist">
-          <option value="" data-max="0" disabled selected>Maak uw keuze...</option>
         <option value="" data-max="0" disabled selected>Maak uw keuze...</option>
         <option value="Alain Peleman" data-max="52500">Alain P (52.500 hm)</option>
         <option value="Stephane Vandamme" data-max="52500">Stephane V (52.500 hm)</option>
@@ -69,24 +68,21 @@
         <option value="Jochen Vanpoeyer" data-max="500">Jochen V (500 hm)</option>
       </select>
 
-        </select>
-
         <label>Naam Sponsor</label>
-        <input type="text" id="cdv-sponsor" placeholder="Uw naam of bedrijfsnaam">
+<input type="text" id="cdv-sponsor" placeholder="Uw naam of bedrijfsnaam">
 
-        <label>Kies uw sponsorbedrag per 500 hm</label>
-        <div class="cdv-amount-grid">
-          <div class="cdv-amount-btn" data-amount="0.5">€ 0,50</div>
-          <div class="cdv-amount-btn" data-amount="5">€ 5,00</div>
-          <div class="cdv-amount-btn" data-amount="10">€ 10,00</div>
-          <div class="cdv-amount-btn" data-amount="custom">Bedrag kiezen</div>
-        </div>
+<label>Kies uw sponsorbedrag per 500 hm</label>
+<div class="cdv-amount-grid">
+  <div class="cdv-amount-btn" data-amount="0.5">€ 0,50</div>
+  <div class="cdv-amount-btn" data-amount="5">€ 5,00</div>
+  <div class="cdv-amount-btn" data-amount="10">€ 10,00</div>
+  <div class="cdv-amount-btn" data-amount="custom">Bedrag kiezen</div>
+</div>
 
-        <div id="cdv-custom-wrapper" class="cdv-custom-input">
-          <label>Uw bedrag per 500 hm (€)</label>
-          <input type="number" id="cdv-rate" min="0.10" step="0.10" placeholder="0.00">
-        </div>
-      </div>
+<div id="cdv-custom-wrapper" class="cdv-custom-input">
+  <label for="cdv-rate">Uw bedrag per 500 hm (€)</label>
+  <input type="number" id="cdv-rate" min="0.10" step="0.10" placeholder="0.00">
+</div>
 
       <!-- CARD 2 -->
       <div class="cdv-card">
@@ -157,7 +153,15 @@
     </form>
 
   </div>
+<div id="donation-container">
+    <label for="donation-amount">Donation Amount:</label>
+    <input type="number" id="donation-amount" name="amount" min="1" placeholder="Enter amount">
+</div>
 
+<div class="bike-wrapper">
+    <img src="bike.png" class="bike-image" alt="Bicycle">
+</div>
+  
   <script src="script.js"></script>
 </body>
 </html>
