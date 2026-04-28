@@ -1,189 +1,30 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leaderboard – Coduvelo Tour '76</title>
-  <link rel="stylesheet" href="assets/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Coduvelo Tour '76</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
-  <div id="cdv-app">
 
-    <div class="cdv-header">
-      <h1>Coduvelo Tour '76</h1>
-      <p>Healthy Heart Fund — Leaderboard</p>
-    </div>
-
-    <div class="cdv-card">
-      <div class="cdv-card-title">Klassement sponsoring</div>
-
-      <div id="cdv-lb">
-
-        <div class="lb-header">
-          <div>
-            <div class="lb-header-title">Sponsortotalen</div>
-            <div class="lb-header-sub">Live bijgewerkt</div>
-          </div>
-          <button class="lb-refresh-btn" id="lb-btn" onclick="lbLoad()">↻ Vernieuwen</button>
-        </div>
-
-        <div id="lb-total" class="lb-total">
-          <span class="lb-total-label">Totaal ingezameld</span>
-          <span class="lb-total-val" id="lb-total-val">€ 0,00</span>
-        </div>
-
-        <div class="lb-date" id="lb-date"></div>
-
-        <div id="lb-body" class="lb-body">
-          <div class="lb-empty">Klik op vernieuwen om de stand te laden.</div>
-        </div>
-
-      </div>
-    </div>
-
+<div id="cdv-app">
+  <div class="cdv-header">
+    <h1>Leaderboard</h1>
+    <p>Huidige tussenstand per fietser</p>
   </div>
 
-  <script src="leaderboard.js"></script>
-</body>
-</html>
-<div id="cdv-lb">
-  <div class="lb-header">
-    <div class="lb-header-left">
-      <div class="lb-header-title">Klassement sponsoring</div>
-      <div class="lb-header-sub">Coduvelo Tour '76 · Healthy Heart Fund</div>
+  <div class="cdv-card">
+    <div id="cdv-leaderboard-container">
+      <p>Leaderboard aan het laden...</p>
     </div>
-    <button class="lb-refresh-btn" id="lb-btn" onclick="lbLoad()">↻ Vernieuwen</button>
-  </div>
-  <div id="lb-total" class="lb-total">
-    <span class="lb-total-label">Totaal ingezameld</span>
-    <span class="lb-total-val" id="lb-total-val">€ 0,00</span>
-  </div>
-  <div class="lb-date" id="lb-date"></div>
-  <div id="lb-body" class="lb-body">
-    <div class="lb-empty">Klik op vernieuwen om de stand te laden.</div>
+    
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="index.html" class="cdv-btn cdv-btn-outline">← Terug naar donatiepagina</a>
+    </div>
   </div>
 </div>
 
-<script>
-(function(){
-  // BELANGRIJKE: Vervang dit door jouw Google Apps Script URL
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLPDmCIqQsfj-NGilxKJDNylTY66wYY4zEc3UAa1tXfURdy4XpmL61mQ6cb_GrWE5A/exec';
-  
-  window.lbLoad = function() {
-    var body     = document.getElementById('lb-body');
-    var totalBox = document.getElementById('lb-total');
-    var btn      = document.getElementById('lb-btn');
-    
-    body.innerHTML         = '<div class="lb-empty">Gegevens ophalen...</div>';
-    totalBox.style.display = 'none';
-    btn.disabled           = true;
-    btn.innerText          = '↻ Laden...';
-
-    var now = new Date();
-    document.getElementById('lb-date').innerText =
-      'Stand van ' + now.toLocaleDateString('nl-BE', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-
-    // Fetch data
-    fetch(SCRIPT_URL + '?action=leaderboard&t=' + Date.now(), {
-      method: 'GET',
-      redirect: 'follow'
-    })
-      .then(function(res) {
-        if (!res.ok) {
-          throw new Error('HTTP error: ' + res.status);
-        }
-        return res.text();
-      })
-      .then(function(text) {
-        try {
-          var data = JSON.parse(text);
-          
-          // Check for error in response
-          if (data.error) {
-            throw new Error(data.error + (data.message ? ': ' + data.message : ''));
-          }
-          
-          btn.disabled  = false;
-          btn.innerText = '↻ Vernieuwen';
-          lbRender(data, body, totalBox);
-        } catch(e) {
-          throw new Error('Ongeldige response: ' + e.message);
-        }
-      })
-      .catch(function(error) {
-        btn.disabled  = false;
-        btn.innerText = '↻ Vernieuwen';
-        
-        body.innerHTML = '<div class="lb-empty">Kon geen verbinding maken.</div>'
-          + '<div class="lb-error">'
-          + '<strong>Fout:</strong> ' + error.message + '<br><br>'
-          + '<strong>Controleer:</strong><br>'
-          + '• Is de Google Apps Script URL correct?<br>'
-          + '• Is de deployment ingesteld op "Anyone"?<br>'
-          + '• Bestaat de "' + 'Sponsoring' + '" tab in je spreadsheet?'
-          + '</div>';
-      });
-  };
-  function lbRender(data, body, totalBox) {
-    // Check if data is valid
-    if (!Array.isArray(data)) {
-      body.innerHTML = '<div class="lb-empty">Ongeldige data ontvangen.</div>'
-        + '<div class="lb-error">Data moet een array zijn. Ontvangen: ' + typeof data + '</div>';
-      return;
-    }
-
-    if (data.length === 0) {
-      body.innerHTML = '<div class="lb-empty">Nog geen sponsoring geregistreerd.</div>';
-      return;
-    }
-
-    // Data should be in format: [{name: "...", total: 123.45}, ...]
-    var rows = data
-      .filter(function(r) { return r.name && r.total > 0; })
-      .sort(function(a, b) { return b.total - a.total; });
-
-    if (rows.length === 0) {
-      body.innerHTML = '<div class="lb-empty">Nog geen sponsoring geregistreerd.</div>';
-      return;
-    }
-
-    var maxEur     = rows[0].total || 1;
-    var grandTotal = rows.reduce(function(s, r) { return s + r.total; }, 0);
-
-    totalBox.style.display = 'flex';
-    document.getElementById('lb-total-val').innerText = '€ ' + grandTotal.toFixed(2).replace('.', ',');
-
-    var medals  = ['🥇', '🥈', '🥉'];
-    var classes = ['gold', 'silver', 'bronze'];
-    var html = '';
-
-    rows.forEach(function(r, i) {
-      var cls   = i < 3 ? classes[i] : '';
-      var medal = i < 3 ? '<span class="lb-medal">' + medals[i] + '</span>' : '';
-      var pct   = Math.round((r.total / maxEur) * 100);
-      html += '<div class="lb-row ' + cls + '" data-pct="' + pct + '">'
-        + '<div class="lb-rank ' + cls + '">' + (i + 1) + '</div>'
-        + '<div class="lb-name">' + medal + r.name + '</div>'
-        + '<div class="lb-bar-outer"><div class="lb-bar-fill" style="width:0%"></div></div>'
-        + '<div class="lb-amount">€ ' + r.total.toFixed(2).replace('.', ',') + '</div>'
-        + '</div>';
-    });
-    body.innerHTML = html;
-
-    // Animate bars
-    setTimeout(function() {
-      body.querySelectorAll('.lb-row').forEach(function(row) {
-        row.querySelector('.lb-bar-fill').style.width = row.dataset.pct + '%';
-      });
-    }, 80);
-  }
-
-  // Auto-load on page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', lbLoad);
-  } else {
-    setTimeout(lbLoad, 100);
-  }
-})();
-</script>
+<script src="assets/js/leaderboard.js"></script>
+</body>
+</html>
