@@ -230,18 +230,17 @@ input[type="number"] {
   50%  { transform: rotate(3deg) translateX(2px); }
   100% { transform: rotate(0deg) translateX(0); }
 }
-
 #cdv-bike {
   position: absolute;
-  transform: translate(-12px, -12px);
-  font-size: clamp(22px, 4vw, 38px); /* automatisch schalen */
+  font-size: clamp(26px, 4.5vw, 40px);
+  transform: translate(-14px, -20px);
+  transition: transform 0.25s ease-out; /* vloeiend */
   line-height: 1;
 }
 
-
-.cdv-fw {
-  font-size:10px;
-  margin-bottom:-4px;
+#cdv-fw {
+  font-size: clamp(16px, 3vw, 28px);
+  margin-bottom: -6px;
 }
 
 /* Stepper & totals */
