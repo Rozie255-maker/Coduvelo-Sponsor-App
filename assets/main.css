@@ -64,20 +64,19 @@ body {
 /* Cards */
 
 .cdv-card {
-  background:var(--box);
-  border:1.5px solid var(--border);
-  border-radius:var(--radius);
-  padding:1.25rem;
-  margin:1rem 1.25rem;
+  background: #ffffff;
+  padding: 20px 18px;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 .cdv-card-title {
-  font-family:var(--font-title);
-  font-size:16px;
-  color:var(--dark);
-  margin-bottom:1.2rem;
-  padding-bottom:8px;
-  border-bottom:1.5px solid var(--mountain-dark);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--dark);
 }
 
 /* Form elements */
