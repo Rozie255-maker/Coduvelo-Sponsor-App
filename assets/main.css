@@ -255,11 +255,10 @@ input[type="number"] {
 #cdv-bike {
   position: absolute;
   font-size: clamp(26px, 4.5vw, 40px);
-  transform: translate(-14px, -20px);
-  transition: transform 0.25s ease-out; /* vloeiend */
+  transition: transform 0.25s ease-out;
   line-height: 1;
+  transform-origin: center;
 }
-
 #cdv-fw {
   font-size: clamp(16px, 3vw, 28px);
   margin-bottom: -6px;
