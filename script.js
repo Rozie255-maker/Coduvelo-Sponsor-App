@@ -28,7 +28,7 @@ function updateBikePosition() {
   const progress = chosenHm / maxHm;
   const point = path.getPointAtLength(progress * pathLength);
 
-  bike.style.transform = `translate(${point.x}px, ${point.y}px)`;
+bike.style.transform = `translate(${point.x - 18}px, ${point.y - 10}px)`;
 }
 
 // -----------------------------
