@@ -259,12 +259,16 @@ input[type="number"] {
     left: 0;
     /* Must match the path used in the SVG */
     offset-path: path('M0 125 C40 110,90 95,140 98 C190 102,240 68,295 38 C335 16,368 18,400 4');
-    offset-rotate: 0deg;
+    
+    /* 'auto' allows the bike to rotate along the curve of the hill */
+    offset-rotate: auto; 
+    
     animation: move-along-path 5s linear infinite;
-    /* This flips the bike to face right */
-    transform: scaleX(-1);
+    
+    /* Change this to 1 to flip it the other way */
+    transform: scaleX(1); 
+    
     transform-origin: center;
-    /* Keeps the bike on top of the path */
     z-index: 10;
 }
 
