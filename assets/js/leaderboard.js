@@ -1,6 +1,6 @@
 (function(){
   // Gebruik exact dezelfde URL als in je script.js
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCW8AMmmPfL_0Ztzq4h1GvlKemmhaXTszpeoCimUQjb7YjzPttOZ97aPFuvx30d45L/exec';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxuHTDWICb0iYpTm_GMyEkZzEPE3vGH-RtkBR3cjBlwsr3iRyPoFwLyP490a2SQr8jO/exec';
   
   function loadLeaderboard() {
     var container = document.getElementById('cdv-leaderboard-container');
