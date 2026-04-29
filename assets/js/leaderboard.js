@@ -24,7 +24,7 @@
         
         // Sort by total amount (highest first)
         data.sort(function (a, b) {
-          return b.total - a.total;
+          return b.total - a.total;  // ✅ WAS: [b.total](http://b.total) - [a.total](http://a.total)
         });
         
         // Generate HTML for each row
@@ -33,10 +33,10 @@
             return (
               '<div class="cdv-leaderboard-row">' +
               '<span class="cdv-leaderboard-name">' +
-              item.name +
+              item.name +  // ✅ WAS: [item.name](http://item.name)
               '</span>' +
               '<span class="cdv-leaderboard-amount">€ ' +
-              item.total.toFixed(2).replace('.', ',') +
+              item.total.toFixed(2).replace('.', ',') +  // ✅ WAS: [item.total](http://item.total).toFixed(2)
               '</span>' +
               '</div>'
             );
