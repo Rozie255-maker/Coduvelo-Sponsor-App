@@ -362,29 +362,21 @@
     
     // POST request naar Google Apps Script
     fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: formData,
-      mode: 'no-cors' // CORS bypass
-    })
-    .then(function() {
-      console.log('Data verzonden naar Google Sheets');
-    })
-    .catch(function(err) {
-      console.error('Fout bij opslaan:', err);
-    })
-    .finally(function() {
-      // Na 1 seconde doorsturen naar donatiepagina
-      setTimeout(function() {
-        // Store data in localStorage for confirmation page
-        try {
-          localStorage.setItem('cdv_lastDonation', JSON.stringify({
-            fietser: document.getElementById("fietser").value,
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    fietser: document.getElementById("fietser").value,
     sponsor: document.getElementById("sponsor").value,
     bedrag: document.getElementById("bedrag").value,
-    hoogtemeters: document.getElementById("hm").value,
-    tarief: document.getElementById("tarief").value,
-            timestamp: new Date().toISOString()
-          }));
+    hm: document.getElementById("hm").value,
+    tarief: document.getElementById("tarief").value
+  })
+})
+.then(r => r.text())
+.then(t => console.log("GS response:", t))
+.catch(err => console.error("Fout bij opslaan:", err));;
         } catch(e) {
           console.log('LocalStorage not available');
         }
