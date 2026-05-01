@@ -378,11 +378,11 @@
         // Store data in localStorage for confirmation page
         try {
           localStorage.setItem('cdv_lastDonation', JSON.stringify({
-            cyclist: cyclist,
-            sponsor: name,
-            amount: totalFormatted,
-            hm: chosenHm,
-            rate: selectedRate,
+            fietser: document.getElementById("fietser").value,
+    sponsor: document.getElementById("sponsor").value,
+    bedrag: document.getElementById("bedrag").value,
+    hoogtemeters: document.getElementById("hm").value,
+    tarief: document.getElementById("tarief").value,
             timestamp: new Date().toISOString()
           }));
         } catch(e) {
