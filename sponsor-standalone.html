@@ -212,7 +212,7 @@
 <script>
 (function(){
   // VERVANG DIT DOOR JOUW GOOGLE APPS SCRIPT URL
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTE7NyTjpnnJOzU3fAazosEDDilFDShzvmYwkEZHxtLw687CnGplhi5_wZ4QYH0VZA/exec';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzceEXxOAEdDha_T99_SMWDXapQlGVSN2Vo51L6AtBJAUGIWISoR8UUsr60dvBNHq_q/exec';
   
   var chosenHm = 0, maxHm = 0;
   var selectedRate = 0;
@@ -333,7 +333,7 @@
     document.getElementById('cdv-submit').disabled = !(cyclist && name && chosenHm > 0 && selectedRate > 0);
   };
 
-  window.cdvConfirm = function() {
+ window.cdvConfirm = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
     var totalAmount = (chosenHm / 500) * selectedRate;
@@ -344,42 +344,48 @@
     btn.innerText = 'Opslaan...';
     btn.disabled  = true;
     
-    console.log('Submitting data:', {
+    // Data die we gaan versturen
+    var postData = {
       fietser: cyclist,
       sponsor: name,
-      bedrag: totalFormatted,
+      bedrag: parseFloat(totalFormatted), // Als nummer versturen
       hm: chosenHm,
       tarief: selectedRate
-    });
+    };
     
-    // Probeer eerst data op te slaan in Google Sheets
-    var formData = new FormData();
-    formData.append('fietser', cyclist);
-    formData.append('sponsor', name);
-    formData.append('bedrag', totalFormatted);
-    formData.append('hm', chosenHm);
-    formData.append('tarief', selectedRate);
+    console.log('Submitting data:', postData);
     
     // POST request naar Google Apps Script
     fetch(SCRIPT_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    fietser: document.getElementById("fietser").value,
-    sponsor: document.getElementById("sponsor").value,
-    bedrag: document.getElementById("bedrag").value,
-    hm: document.getElementById("hm").value,
-    tarief: document.getElementById("tarief").value
-  })
-})
-.then(r => r.text())
-.then(t => console.log("GS response:", t))
-.catch(err => console.error("Fout bij opslaan:", err));;
-        } catch(e) {
-          console.log('LocalStorage not available');
-        }
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(postData)
+    })
+    .then(response => response.text())
+    .then(result => {
+      console.log('Google Sheets response:', result);
+      
+      // Nu pas naar KUL donatiepagina
+      var kulUrl = 'https://actie.kuleuven.be/donatie?bedrag=' + 
+                   totalFormatted.replace('.', ',') + 
+                   '&frequentie=eenmalig&begunstigde=14141425&anoniem=0';
+      
+      window.open(kulUrl, '_blank');
+      
+      // Reset formulier
+      btn.innerText = 'Bevestigen';
+      btn.disabled = false;
+      closeModal('confirm-modal');
+    })
+    .catch(error => {
+      console.error('Error saving to Google Sheets:', error);
+      alert('Er ging iets mis bij het opslaan. Probeer opnieuw.');
+      btn.innerText = 'Bevestigen';
+      btn.disabled = false;
+    });
+}
         // totalAmount is een nummer
 var amountKUL = Math.round(totalAmount * 100);
 
