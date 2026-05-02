@@ -101,7 +101,7 @@
   <div class="cdv-card">
     <div class="cdv-card-title">Kies uw fietser</div>
     <label>Fietser</label>
-    <select id="cdv-cyclist" onchange="cdvCyclistChange()">
+    <select id="cdv-cyclist">
       <option value="" data-max="0" disabled selected>Maak uw keuze...</option>
       <option value="Alain Peleman" data-max="52500">Alain P (52.500 hm)</option>
       <option value="Stephane Vandamme" data-max="52500">Stephane V (52.500 hm)</option>
@@ -152,15 +152,15 @@
     
     <label>Kies uw sponsorbedrag per 500 hm</label>
     <div class="cdv-amount-grid">
-      <div class="cdv-amount-btn" data-amount="0.5" onclick="cdvSelectAmount(0.5)">€ 0,50</div>
-      <div class="cdv-amount-btn" data-amount="5" onclick="cdvSelectAmount(5)">€ 5,00</div>
-      <div class="cdv-amount-btn" data-amount="10" onclick="cdvSelectAmount(10)">€ 10,00</div>
-      <div class="cdv-amount-btn" data-amount="custom" onclick="cdvSelectAmount('custom')">Bedrag kiezen</div>
+      <div class="cdv-amount-btn" data-amount="0.5">€ 0,50</div>
+      <div class="cdv-amount-btn" data-amount="5">€ 5,00</div>
+      <div class="cdv-amount-btn" data-amount="10">€ 10,00</div>
+      <div class="cdv-amount-btn" data-amount="custom">Bedrag kiezen</div>
     </div>
     
     <div id="cdv-custom-wrapper" class="cdv-custom-input">
       <label>Uw bedrag per 500 hm (€)</label>
-      <input type="number" id="cdv-custom-amount" min="0.10" step="0.10" placeholder="0.00" oninput="cdvCustomAmountChange()">
+      <input type="number" id="cdv-custom-amount" min="0.10" step="0.10" placeholder="0.00">
     </div>
   </div>
 
@@ -192,10 +192,10 @@
       <div style="font-size:11px;text-transform:uppercase;color:var(--dark-light);">Hoogtemeters gesponsord</div>
       <div id="cdv-hm-of" style="font-size:11px;color:var(--dark-light);margin-top:4px;">Kies eerst een fietser</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;">
-        <button id="cdv-btn-min"  class="cdv-btn cdv-btn-outline" onclick="cdvChangeHm(-500)" disabled>− 500 hm</button>
-        <button id="cdv-btn-plus" class="cdv-btn cdv-btn-outline" onclick="cdvChangeHm(500)"  disabled>+ 500 hm</button>
+        <button id="cdv-btn-min"  class="cdv-btn cdv-btn-outline" disabled>− 500 hm</button>
+        <button id="cdv-btn-plus" class="cdv-btn cdv-btn-outline" disabled>+ 500 hm</button>
       </div>
-      <button id="cdv-btn-full" class="cdv-btn" style="margin-top:10px;font-size:10px;background:var(--dark);color:#fff;opacity:0.4;" onclick="cdvFull()" disabled>Sponsor volledige klim van fietser</button>
+      <button id="cdv-btn-full" class="cdv-btn" style="margin-top:10px;font-size:10px;background:var(--dark);color:#fff;opacity:0.4;" disabled>Sponsor volledige klim van fietser</button>
     </div>
 
     <div class="cdv-total-display">
@@ -205,38 +205,35 @@
     </div>
 
     <p class="cdv-donate-note">Controleer dit bedrag op de volgende donatiepagina.</p>
-    <button id="cdv-submit" class="cdv-btn cdv-btn-accent" onclick="cdvConfirm()" disabled>Ga naar de donatiepagina →</button>
+    <button id="cdv-submit" class="cdv-btn cdv-btn-accent" disabled>Ga naar de donatiepagina →</button>
   </div>
 </div>
 
 <script>
 (function(){
-  // VERVANG DIT DOOR JOUW GOOGLE APPS SCRIPT URL
+  // ⚠️ VERVANG DIT DOOR JOUW GOOGLE APPS SCRIPT URL
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzceEXxOAEdDha_T99_SMWDXapQlGVSN2Vo51L6AtBJAUGIWISoR8UUsr60dvBNHq_q/exec';
   
   var chosenHm = 0, maxHm = 0;
   var selectedRate = 0;
   var isCustom = false;
 
+  // Selecteer sponsorbedrag
   window.cdvSelectAmount = function(amount) {
-    // Deactivate all buttons
     var btns = document.querySelectorAll('.cdv-amount-btn');
     btns.forEach(function(b) { b.classList.remove('active'); });
     
     if (amount === 'custom') {
-      // Show custom input
       btns[3].classList.add('active');
       isCustom = true;
       document.getElementById('cdv-custom-wrapper').classList.add('show');
       var customVal = parseFloat(document.getElementById('cdv-custom-amount').value) || 0;
       selectedRate = customVal;
     } else {
-      // Set fixed amount
       isCustom = false;
       selectedRate = parseFloat(amount);
       document.getElementById('cdv-custom-wrapper').classList.remove('show');
       
-      // Activate correct button
       btns.forEach(function(b) {
         if (parseFloat(b.dataset.amount) === parseFloat(amount)) {
           b.classList.add('active');
@@ -246,6 +243,7 @@
     cdvUpdateUI();
   };
 
+  // Custom bedrag wijzigen
   window.cdvCustomAmountChange = function() {
     var val = parseFloat(document.getElementById('cdv-custom-amount').value);
     if (!isNaN(val) && val > 0) {
@@ -256,6 +254,7 @@
     cdvUpdateUI();
   };
 
+  // Fietser selecteren
   window.cdvCyclistChange = function() {
     var sel = document.getElementById('cdv-cyclist');
     maxHm   = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
@@ -269,6 +268,7 @@
     cdvUpdateUI();
   };
 
+  // Hoogtemeters aanpassen
   window.cdvChangeHm = function(d) {
     if(!maxHm) return;
     chosenHm = Math.max(0, Math.min(maxHm, chosenHm + d));
@@ -276,6 +276,7 @@
     cdvUpdateUI();
   };
 
+  // Volledige klim sponsoren
   window.cdvFull = function() {
     if(!maxHm) return;
     chosenHm = maxHm;
@@ -283,11 +284,13 @@
     cdvUpdateUI();
   };
 
+  // Schaal berekenen
   function getScale() {
     var wrap = document.querySelector('#cdv-app .cdv-mountain-wrap');
     return { x: wrap.offsetWidth / 400, y: wrap.offsetHeight / 140 };
   }
 
+  // Finish vlag positioneren
   function positionFlag() {
     var path = document.getElementById('cdv-ride-path');
     var flag = document.getElementById('cdv-finish-node');
@@ -298,6 +301,7 @@
     } catch(e) {}
   }
 
+  // Fiets animeren op berg
   function cdvMoveBike() {
     var path = document.getElementById('cdv-ride-path');
     var bike = document.getElementById('cdv-bike');
@@ -311,6 +315,7 @@
     } catch(e) {}
   }
 
+  // UI updaten
   window.cdvUpdateUI = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
@@ -318,44 +323,39 @@
     document.getElementById('cdv-chosen-hm').innerText = chosenHm.toLocaleString('nl-BE');
     document.getElementById('cdv-hm-of').innerText     = maxHm > 0 ? 'doel: ' + maxHm.toLocaleString('nl-BE') + ' hm' : 'Kies eerst een fietser';
     
-    // Calculate total amount
     var totalAmount = (chosenHm / 500) * selectedRate;
     document.getElementById('cdv-total').innerText = totalAmount.toFixed(2).replace('.', ',');
     
-    // Update rate display
     if (selectedRate > 0) {
       document.getElementById('cdv-rate-display').innerText = '€ ' + selectedRate.toFixed(2).replace('.', ',') + ' per 500 hm';
     } else {
       document.getElementById('cdv-rate-display').innerText = '';
     }
     
-    // Enable submit button only when all fields are filled
     document.getElementById('cdv-submit').disabled = !(cyclist && name && chosenHm > 0 && selectedRate > 0);
   };
 
- window.cdvConfirm = function() {
+  // Bevestigen en opslaan
+  window.cdvConfirm = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
     var totalAmount = (chosenHm / 500) * selectedRate;
-    var totalFormatted = totalAmount.toFixed(2); // Met punt voor backend
-    var totalDisplay = totalAmount.toFixed(2).replace('.', ','); // Met komma voor display
+    var totalFormatted = totalAmount.toFixed(2);
     
     var btn = document.getElementById('cdv-submit');
     btn.innerText = 'Opslaan...';
     btn.disabled  = true;
     
-    // Data die we gaan versturen
     var postData = {
       fietser: cyclist,
       sponsor: name,
-      bedrag: parseFloat(totalFormatted), // Als nummer versturen
+      bedrag: parseFloat(totalFormatted),
       hm: chosenHm,
       tarief: selectedRate
     };
     
     console.log('Submitting data:', postData);
     
-    // POST request naar Google Apps Script
     fetch(SCRIPT_URL, {
       method: "POST",
       headers: {
@@ -363,45 +363,51 @@
       },
       body: JSON.stringify(postData)
     })
-    .then(response => response.text())
-    .then(result => {
+    .then(function(response) { 
+      return response.text(); 
+    })
+    .then(function(result) {
       console.log('Google Sheets response:', result);
       
-      // Nu pas naar KUL donatiepagina
-      var kulUrl = 'https://actie.kuleuven.be/donatie?bedrag=' + 
-                   totalFormatted.replace('.', ',') + 
-                   '&frequentie=eenmalig&begunstigde=14141425&anoniem=0';
+      // Bedrag omrekenen naar centen voor KUL
+      var amountKUL = Math.round(totalAmount * 100);
       
-      window.open(kulUrl, '_blank');
+      // Open KUL donatiepagina in nieuwe tab
+      window.open(
+        'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
+        '_blank'
+      );
       
-      // Reset formulier
-      btn.innerText = 'Bevestigen';
+      // Reset knop
+      btn.innerText = 'Ga naar de donatiepagina →';
       btn.disabled = false;
-      closeModal('confirm-modal');
     })
-    .catch(error => {
+    .catch(function(error) {
       console.error('Error saving to Google Sheets:', error);
       alert('Er ging iets mis bij het opslaan. Probeer opnieuw.');
-      btn.innerText = 'Bevestigen';
+      btn.innerText = 'Ga naar de donatiepagina →';
       btn.disabled = false;
-    });
-}
-        // totalAmount is een nummer
-var amountKUL = Math.round(totalAmount * 100);
-
-// Open KUL donatiepagina in nieuw tabblad
-window.open(
-  'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
-  '_blank'
-);
-
-        // Redirect naar KUL donatiepagina
-        window.location.href = 'https://donate.kuleuven.cloud/Coduvelo-76/';
-      }, 1000);
     });
   };
 
+  // Event listeners
+  document.getElementById('cdv-cyclist').addEventListener('change', cdvCyclistChange);
   document.getElementById('cdv-sponsor-name').addEventListener('input', cdvUpdateUI);
+  document.getElementById('cdv-custom-amount').addEventListener('input', cdvCustomAmountChange);
+  document.getElementById('cdv-btn-min').addEventListener('click', function() { cdvChangeHm(-500); });
+  document.getElementById('cdv-btn-plus').addEventListener('click', function() { cdvChangeHm(500); });
+  document.getElementById('cdv-btn-full').addEventListener('click', cdvFull);
+  document.getElementById('cdv-submit').addEventListener('click', cdvConfirm);
+  
+  // Amount buttons
+  var amountBtns = document.querySelectorAll('.cdv-amount-btn');
+  amountBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var amt = this.dataset.amount;
+      cdvSelectAmount(amt === 'custom' ? 'custom' : parseFloat(amt));
+    });
+  });
+  
   window.addEventListener('resize', function() { 
     positionFlag(); 
     cdvMoveBike(); 
