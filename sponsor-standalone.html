@@ -210,15 +210,14 @@
 </div>
 
 <script>
+<script>
 (function(){
-  // ⚠️ VERVANG DIT DOOR JOUW GOOGLE APPS SCRIPT URL
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzceEXxOAEdDha_T99_SMWDXapQlGVSN2Vo51L6AtBJAUGIWISoR8UUsr60dvBNHq_q/exec';
   
   var chosenHm = 0, maxHm = 0;
   var selectedRate = 0;
   var isCustom = false;
 
-  // Selecteer sponsorbedrag
   window.cdvSelectAmount = function(amount) {
     var btns = document.querySelectorAll('.cdv-amount-btn');
     btns.forEach(function(b) { b.classList.remove('active'); });
@@ -243,7 +242,6 @@
     cdvUpdateUI();
   };
 
-  // Custom bedrag wijzigen
   window.cdvCustomAmountChange = function() {
     var val = parseFloat(document.getElementById('cdv-custom-amount').value);
     if (!isNaN(val) && val > 0) {
@@ -254,7 +252,6 @@
     cdvUpdateUI();
   };
 
-  // Fietser selecteren
   window.cdvCyclistChange = function() {
     var sel = document.getElementById('cdv-cyclist');
     maxHm   = parseInt(sel.options[sel.selectedIndex].dataset.max) || 0;
@@ -268,7 +265,6 @@
     cdvUpdateUI();
   };
 
-  // Hoogtemeters aanpassen
   window.cdvChangeHm = function(d) {
     if(!maxHm) return;
     chosenHm = Math.max(0, Math.min(maxHm, chosenHm + d));
@@ -276,7 +272,6 @@
     cdvUpdateUI();
   };
 
-  // Volledige klim sponsoren
   window.cdvFull = function() {
     if(!maxHm) return;
     chosenHm = maxHm;
@@ -284,13 +279,11 @@
     cdvUpdateUI();
   };
 
-  // Schaal berekenen
   function getScale() {
     var wrap = document.querySelector('#cdv-app .cdv-mountain-wrap');
     return { x: wrap.offsetWidth / 400, y: wrap.offsetHeight / 140 };
   }
 
-  // Finish vlag positioneren
   function positionFlag() {
     var path = document.getElementById('cdv-ride-path');
     var flag = document.getElementById('cdv-finish-node');
@@ -301,7 +294,6 @@
     } catch(e) {}
   }
 
-  // Fiets animeren op berg
   function cdvMoveBike() {
     var path = document.getElementById('cdv-ride-path');
     var bike = document.getElementById('cdv-bike');
@@ -315,7 +307,6 @@
     } catch(e) {}
   }
 
-  // UI updaten
   window.cdvUpdateUI = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
@@ -335,7 +326,6 @@
     document.getElementById('cdv-submit').disabled = !(cyclist && name && chosenHm > 0 && selectedRate > 0);
   };
 
-  // Bevestigen en opslaan
   window.cdvConfirm = function() {
     var cyclist = document.getElementById('cdv-cyclist').value;
     var name    = document.getElementById('cdv-sponsor-name').value.trim();
@@ -369,16 +359,13 @@
     .then(function(result) {
       console.log('Google Sheets response:', result);
       
-      // Bedrag omrekenen naar centen voor KUL
       var amountKUL = Math.round(totalAmount * 100);
       
-      // Open KUL donatiepagina in nieuwe tab
       window.open(
         'https://donate.kuleuven.cloud/?cid=80&affectation=CRWD:kuleuven%2FCoduvelo_76&lang=nl_NL&amount=' + amountKUL,
         '_blank'
       );
       
-      // Reset knop
       btn.innerText = 'Ga naar de donatiepagina →';
       btn.disabled = false;
     })
@@ -390,7 +377,6 @@
     });
   };
 
-  // Event listeners
   document.getElementById('cdv-cyclist').addEventListener('change', cdvCyclistChange);
   document.getElementById('cdv-sponsor-name').addEventListener('input', cdvUpdateUI);
   document.getElementById('cdv-custom-amount').addEventListener('input', cdvCustomAmountChange);
@@ -399,7 +385,6 @@
   document.getElementById('cdv-btn-full').addEventListener('click', cdvFull);
   document.getElementById('cdv-submit').addEventListener('click', cdvConfirm);
   
-  // Amount buttons
   var amountBtns = document.querySelectorAll('.cdv-amount-btn');
   amountBtns.forEach(function(btn) {
     btn.addEventListener('click', function() {
